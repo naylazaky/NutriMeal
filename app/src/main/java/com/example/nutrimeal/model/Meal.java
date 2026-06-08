@@ -1,11 +1,26 @@
 package com.example.nutrimeal.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Meal {
+    @SerializedName("idMeal")
     private String idMeal;
+
+    @SerializedName("strMeal")
     private String strMeal;
+
+    @SerializedName("strCategory")
     private String strCategory;
+
+    @SerializedName("strArea")
     private String strArea;
+
+    @SerializedName("strMealThumb")
     private String strMealThumb;
+
+    @SerializedName("strInstructions")
+    private String strInstructions;
+
     private boolean isFavorite;
 
     public Meal(String idMeal, String strMeal, String strCategory,
@@ -38,8 +53,12 @@ public class Meal {
         return strMealThumb;
     }
 
-    public boolean isFavorite() {
-        return isFavorite;
+    public String getStrInstructions() {
+        return strInstructions;
+    }
+
+    public boolean isFavorite() { return
+            isFavorite;
     }
 
     public void setFavorite(boolean favorite) {

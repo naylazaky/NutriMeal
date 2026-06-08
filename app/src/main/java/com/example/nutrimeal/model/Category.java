@@ -1,9 +1,19 @@
 package com.example.nutrimeal.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Category {
+    @SerializedName("idCategory")
     private String idCategory;
+
+    @SerializedName("strCategory")
     private String strCategory;
+
+    @SerializedName("strCategoryThumb")
     private String strCategoryThumb;
+
+    @SerializedName("strCategoryDescription")
+    private String strCategoryDescription;
 
     public Category(String idCategory, String strCategory, String strCategoryThumb) {
         this.idCategory = idCategory;

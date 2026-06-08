@@ -1,11 +1,14 @@
 package com.example.nutrimeal.fragment;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,14 +19,22 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.nutrimeal.R;
 import com.example.nutrimeal.adapter.CategoryAdapter;
 import com.example.nutrimeal.adapter.MealAdapter;
+import com.example.nutrimeal.api.ApiClient;
 import com.example.nutrimeal.model.Category;
+import com.example.nutrimeal.model.CategoryResponse;
 import com.example.nutrimeal.model.Meal;
+import com.example.nutrimeal.model.MealResponse;
+import com.example.nutrimeal.utils.NetworkUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 
@@ -34,6 +45,8 @@ public class HomeFragment extends Fragment {
 
     private CategoryAdapter categoryAdapter;
     private MealAdapter mealAdapter;
+
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Nullable
     @Override
@@ -50,14 +63,13 @@ public class HomeFragment extends Fragment {
         bindViews(view);
         setupGreeting();
         setupAdapters();
-        loadDummyData();
+        checkNetworkAndLoad();
 
         swipeRefresh.setColorSchemeColors(
                 requireContext().getColor(R.color.accent));
-        swipeRefresh.setOnRefreshListener(() -> {
-            loadDummyData();
-            swipeRefresh.setRefreshing(false);
-        });
+        swipeRefresh.setOnRefreshListener(this::checkNetworkAndLoad);
+
+        view.findViewById(R.id.btn_refresh).setOnClickListener(v -> checkNetworkAndLoad());
     }
 
     private void bindViews(View view) {
@@ -85,35 +97,100 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupAdapters() {
-        categoryAdapter = new CategoryAdapter(category -> {
-        });
+        categoryAdapter = new CategoryAdapter(category -> loadRecipesByCategory(category.getStrCategory()));
         rvCategories.setAdapter(categoryAdapter);
 
         mealAdapter = new MealAdapter(new MealAdapter.OnMealClickListener() {
             @Override
             public void onMealClick(Meal meal) {
+                // TODO: navigate to detail (Step 8)
+                Toast.makeText(getContext(), meal.getStrMeal(), Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onFavoriteClick(Meal meal, int position) {
+                // TODO: save to favorites (Step 7)
+                Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
             }
         });
         rvRecipes.setAdapter(mealAdapter);
     }
 
-    private void loadDummyData() {
-        List<Category> categories = new ArrayList<>();
-        categories.add(new Category("1", "Beef", ""));
-        categories.add(new Category("2", "Chicken", ""));
-        categories.add(new Category("3", "Seafood", ""));
-        categories.add(new Category("4", "Pasta", ""));
-        categories.add(new Category("5", "Dessert", ""));
-        categoryAdapter.submitList(categories);
+    private void checkNetworkAndLoad() {
+        if (NetworkUtils.isNetworkAvailable(requireContext())) {
+            layoutOffline.setVisibility(View.GONE);
+            loadCategories();
+            loadRecipes("chicken");
+        } else {
+            layoutOffline.setVisibility(View.VISIBLE);
+            swipeRefresh.setRefreshing(false);
+        }
+    }
 
-        List<Meal> meals = new ArrayList<>();
-        meals.add(new Meal("1", "Spaghetti Bolognese", "Pasta", "Italian", ""));
-        meals.add(new Meal("2", "Chicken Tikka Masala", "Chicken", "Indian", ""));
-        meals.add(new Meal("3", "Beef Stroganoff", "Beef", "Russian", ""));
-        meals.add(new Meal("4", "Pad Thai", "Pasta", "Thai", ""));
-        mealAdapter.submitList(meals);
+    private void loadCategories() {
+        ApiClient.getMealApiService().getCategories().enqueue(new Callback<CategoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CategoryResponse> call,
+                                   @NonNull Response<CategoryResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Category> categories = response.body().getCategories();
+                    if (categories != null) {
+                        mainHandler.post(() -> categoryAdapter.submitList(categories));
+                    }
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable t) {
+                mainHandler.post(() ->
+                        Toast.makeText(getContext(), "Failed to load categories", Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
+    private void loadRecipes(String keyword) {
+        swipeRefresh.setRefreshing(true);
+        ApiClient.getMealApiService().searchMeals(keyword).enqueue(new Callback<MealResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<MealResponse> call,
+                                   @NonNull Response<MealResponse> response) {
+                swipeRefresh.setRefreshing(false);
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Meal> meals = response.body().getMeals();
+                    if (meals != null) {
+                        mainHandler.post(() -> mealAdapter.submitList(meals));
+                    }
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<MealResponse> call, @NonNull Throwable t) {
+                mainHandler.post(() -> {
+                    swipeRefresh.setRefreshing(false);
+                    Toast.makeText(getContext(), "Failed to load recipes", Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
+    private void loadRecipesByCategory(String category) {
+        swipeRefresh.setRefreshing(true);
+        ApiClient.getMealApiService().filterByCategory(category).enqueue(new Callback<MealResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<MealResponse> call,
+                                   @NonNull Response<MealResponse> response) {
+                swipeRefresh.setRefreshing(false);
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Meal> meals = response.body().getMeals();
+                    if (meals != null) {
+                        mainHandler.post(() -> mealAdapter.submitList(meals));
+                    }
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<MealResponse> call, @NonNull Throwable t) {
+                mainHandler.post(() -> {
+                    swipeRefresh.setRefreshing(false);
+                    Toast.makeText(getContext(), "Failed to load recipes", Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
 }
