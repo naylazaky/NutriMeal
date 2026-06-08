@@ -49,16 +49,16 @@ public class Meal {
         return strArea;
     }
 
-    public String getStrMealThumb() {
-        return strMealThumb;
+    public String getStrMealThumb() { return
+            strMealThumb;
     }
 
     public String getStrInstructions() {
         return strInstructions;
     }
 
-    public boolean isFavorite() { return
-            isFavorite;
+    public boolean isFavorite() {
+        return isFavorite;
     }
 
     public void setFavorite(boolean favorite) {

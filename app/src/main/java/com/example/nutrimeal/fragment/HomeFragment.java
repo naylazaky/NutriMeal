@@ -27,7 +27,6 @@ import com.example.nutrimeal.model.MealResponse;
 import com.example.nutrimeal.utils.NetworkUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -68,7 +67,6 @@ public class HomeFragment extends Fragment {
         swipeRefresh.setColorSchemeColors(
                 requireContext().getColor(R.color.accent));
         swipeRefresh.setOnRefreshListener(this::checkNetworkAndLoad);
-
         view.findViewById(R.id.btn_refresh).setOnClickListener(v -> checkNetworkAndLoad());
     }
 
@@ -91,13 +89,13 @@ public class HomeFragment extends Fragment {
         else greeting = getString(R.string.good_evening);
 
         tvGreeting.setText(greeting);
-
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMMM", Locale.getDefault());
         tvDate.setText(sdf.format(cal.getTime()));
     }
 
     private void setupAdapters() {
-        categoryAdapter = new CategoryAdapter(category -> loadRecipesByCategory(category.getStrCategory()));
+        categoryAdapter = new CategoryAdapter(
+                category -> loadRecipesByCategory(category.getStrCategory()));
         rvCategories.setAdapter(categoryAdapter);
 
         mealAdapter = new MealAdapter(new MealAdapter.OnMealClickListener() {
@@ -106,6 +104,7 @@ public class HomeFragment extends Fragment {
                 // TODO: navigate to detail (Step 8)
                 Toast.makeText(getContext(), meal.getStrMeal(), Toast.LENGTH_SHORT).show();
             }
+
             @Override
             public void onFavoriteClick(Meal meal, int position) {
                 // TODO: save to favorites (Step 7)
@@ -127,70 +126,81 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadCategories() {
-        ApiClient.getMealApiService().getCategories().enqueue(new Callback<CategoryResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<CategoryResponse> call,
-                                   @NonNull Response<CategoryResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Category> categories = response.body().getCategories();
-                    if (categories != null) {
-                        mainHandler.post(() -> categoryAdapter.submitList(categories));
+        ApiClient.getMealApiService().getCategories()
+                .enqueue(new Callback<CategoryResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<CategoryResponse> call,
+                                           @NonNull Response<CategoryResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            List<Category> list = response.body().getCategories();
+                            if (list != null) {
+                                mainHandler.post(() -> categoryAdapter.submitList(list));
+                            }
+                        }
                     }
-                }
-            }
-            @Override
-            public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable t) {
-                mainHandler.post(() ->
-                        Toast.makeText(getContext(), "Failed to load categories", Toast.LENGTH_SHORT).show());
-            }
-        });
+
+                    @Override
+                    public void onFailure(@NonNull Call<CategoryResponse> call,
+                                          @NonNull Throwable t) {
+                        mainHandler.post(() -> Toast.makeText(getContext(),
+                                "Failed to load categories", Toast.LENGTH_SHORT).show());
+                    }
+                });
     }
 
     private void loadRecipes(String keyword) {
         swipeRefresh.setRefreshing(true);
-        ApiClient.getMealApiService().searchMeals(keyword).enqueue(new Callback<MealResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<MealResponse> call,
-                                   @NonNull Response<MealResponse> response) {
-                swipeRefresh.setRefreshing(false);
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Meal> meals = response.body().getMeals();
-                    if (meals != null) {
-                        mainHandler.post(() -> mealAdapter.submitList(meals));
+        ApiClient.getMealApiService().searchMeals(keyword)
+                .enqueue(new Callback<MealResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<MealResponse> call,
+                                           @NonNull Response<MealResponse> response) {
+                        swipeRefresh.setRefreshing(false);
+                        if (response.isSuccessful() && response.body() != null) {
+                            List<Meal> list = response.body().getMeals();
+                            if (list != null) {
+                                mainHandler.post(() -> mealAdapter.submitList(list));
+                            }
+                        }
                     }
-                }
-            }
-            @Override
-            public void onFailure(@NonNull Call<MealResponse> call, @NonNull Throwable t) {
-                mainHandler.post(() -> {
-                    swipeRefresh.setRefreshing(false);
-                    Toast.makeText(getContext(), "Failed to load recipes", Toast.LENGTH_SHORT).show();
+
+                    @Override
+                    public void onFailure(@NonNull Call<MealResponse> call,
+                                          @NonNull Throwable t) {
+                        mainHandler.post(() -> {
+                            swipeRefresh.setRefreshing(false);
+                            Toast.makeText(getContext(),
+                                    "Failed to load recipes", Toast.LENGTH_SHORT).show();
+                        });
+                    }
                 });
-            }
-        });
     }
 
     private void loadRecipesByCategory(String category) {
         swipeRefresh.setRefreshing(true);
-        ApiClient.getMealApiService().filterByCategory(category).enqueue(new Callback<MealResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<MealResponse> call,
-                                   @NonNull Response<MealResponse> response) {
-                swipeRefresh.setRefreshing(false);
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Meal> meals = response.body().getMeals();
-                    if (meals != null) {
-                        mainHandler.post(() -> mealAdapter.submitList(meals));
+        ApiClient.getMealApiService().filterByCategory(category)
+                .enqueue(new Callback<MealResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<MealResponse> call,
+                                           @NonNull Response<MealResponse> response) {
+                        swipeRefresh.setRefreshing(false);
+                        if (response.isSuccessful() && response.body() != null) {
+                            List<Meal> list = response.body().getMeals();
+                            if (list != null) {
+                                mainHandler.post(() -> mealAdapter.submitList(list));
+                            }
+                        }
                     }
-                }
-            }
-            @Override
-            public void onFailure(@NonNull Call<MealResponse> call, @NonNull Throwable t) {
-                mainHandler.post(() -> {
-                    swipeRefresh.setRefreshing(false);
-                    Toast.makeText(getContext(), "Failed to load recipes", Toast.LENGTH_SHORT).show();
+
+                    @Override
+                    public void onFailure(@NonNull Call<MealResponse> call,
+                                          @NonNull Throwable t) {
+                        mainHandler.post(() -> {
+                            swipeRefresh.setRefreshing(false);
+                            Toast.makeText(getContext(),
+                                    "Failed to load recipes", Toast.LENGTH_SHORT).show();
+                        });
+                    }
                 });
-            }
-        });
     }
 }

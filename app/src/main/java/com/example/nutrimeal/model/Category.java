@@ -12,9 +12,6 @@ public class Category {
     @SerializedName("strCategoryThumb")
     private String strCategoryThumb;
 
-    @SerializedName("strCategoryDescription")
-    private String strCategoryDescription;
-
     public Category(String idCategory, String strCategory, String strCategoryThumb) {
         this.idCategory = idCategory;
         this.strCategory = strCategory;
