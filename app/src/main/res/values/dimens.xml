@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="radius_card">16dp</dimen>
+    <dimen name="radius_button">12dp</dimen>
+    <dimen name="radius_bottom_nav">24dp</dimen>
+    <dimen name="radius_chip">20dp</dimen>
+    <dimen name="radius_image">16dp</dimen>
+    <dimen name="radius_hero">24dp</dimen>
+
+    <dimen name="elevation_card">4dp</dimen>
+    <dimen name="elevation_bottom_nav">8dp</dimen>
+    <dimen name="elevation_search">2dp</dimen>
+
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">16dp</dimen>
+    <dimen name="spacing_lg">24dp</dimen>
+    <dimen name="spacing_xl">32dp</dimen>
+
+    <dimen name="text_h1">24sp</dimen>
+    <dimen name="text_h2">20sp</dimen>
+    <dimen name="text_h3">16sp</dimen>
+    <dimen name="text_body">14sp</dimen>
+    <dimen name="text_caption">12sp</dimen>
+
+    <dimen name="bottom_nav_height">64dp</dimen>
+    <dimen name="hero_image_height">260dp</dimen>
+    <dimen name="recipe_card_image_height">180dp</dimen>
+    <dimen name="category_chip_height">36dp</dimen>
+</resources>
