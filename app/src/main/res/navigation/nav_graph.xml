@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.nutrimeal.fragment.HomeFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.nutrimeal.fragment.SearchFragment"
+        android:label="Search" />
+
+    <fragment
+        android:id="@+id/plannerFragment"
+        android:name="com.example.nutrimeal.fragment.PlannerFragment"
+        android:label="Planner" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.nutrimeal.fragment.ProfileFragment"
+        android:label="Profile" />
+
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.example.nutrimeal.fragment.DetailFragment"
+        android:label="Detail" />
+
+</navigation>
