@@ -13,13 +13,16 @@
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:overScrollMode="never"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <!-- Header -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -44,7 +47,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:fontFamily="@font/poppins_font_bold"
+                        android:fontFamily="@font/poppins_bold"
                         android:text="Monday, 9 June"
                         android:textColor="@color/text_primary_dark"
                         android:textSize="22sp" />
@@ -60,6 +63,7 @@
 
                 </LinearLayout>
 
+                <!-- Offline Banner -->
                 <LinearLayout
                     android:id="@+id/layout_offline"
                     android:layout_width="match_parent"
@@ -92,6 +96,7 @@
 
                 </LinearLayout>
 
+                <!-- Categories -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -104,7 +109,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:layout_marginBottom="12dp"
-                        android:fontFamily="@font/poppins_font_bold"
+                        android:fontFamily="@font/poppins_bold"
                         android:text="Categories"
                         android:textColor="@color/text_primary_light"
                         android:textSize="16sp" />
@@ -114,13 +119,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clipToPadding="false"
+                        android:nestedScrollingEnabled="false"
                         android:orientation="horizontal"
+                        android:overScrollMode="never"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
                 </LinearLayout>
 
+                <!-- Popular Recipes -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -133,7 +141,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:layout_marginBottom="12dp"
-                        android:fontFamily="@font/poppins_font_bold"
+                        android:fontFamily="@font/poppins_bold"
                         android:text="@string/popular_recipes"
                         android:textColor="@color/text_primary_light"
                         android:textSize="18sp" />
@@ -143,6 +151,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false"
+                        android:overScrollMode="never"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
