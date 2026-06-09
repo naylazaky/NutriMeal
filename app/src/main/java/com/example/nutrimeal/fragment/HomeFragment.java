@@ -20,16 +20,21 @@ import com.example.nutrimeal.R;
 import com.example.nutrimeal.adapter.CategoryAdapter;
 import com.example.nutrimeal.adapter.MealAdapter;
 import com.example.nutrimeal.api.ApiClient;
+import com.example.nutrimeal.database.MealDao;
 import com.example.nutrimeal.model.Category;
 import com.example.nutrimeal.model.CategoryResponse;
+import com.example.nutrimeal.model.FavoriteEntity;
 import com.example.nutrimeal.model.Meal;
 import com.example.nutrimeal.model.MealResponse;
 import com.example.nutrimeal.utils.NetworkUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,8 +49,10 @@ public class HomeFragment extends Fragment {
 
     private CategoryAdapter categoryAdapter;
     private MealAdapter mealAdapter;
+    private MealDao mealDao;
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Nullable
     @Override
@@ -58,6 +65,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mealDao = new MealDao(requireContext());
 
         bindViews(view);
         setupGreeting();
@@ -96,7 +105,6 @@ public class HomeFragment extends Fragment {
     private void setupAdapters() {
         categoryAdapter = new CategoryAdapter(category -> {
             if (category.getIdCategory().equals("0")) {
-                // "All" dipilih — load default
                 loadRecipes("chicken");
             } else {
                 loadRecipesByCategory(category.getStrCategory());
@@ -115,10 +123,37 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFavoriteClick(Meal meal, int position) {
-                if (isAdded() && getContext() != null) {
-                    Toast.makeText(getContext(),
-                            "Added to favorites", Toast.LENGTH_SHORT).show();
-                }
+                executor.execute(() -> {
+                    boolean isFav = mealDao.isFavorite(meal.getIdMeal());
+                    if (isFav) {
+                        // Remove from favorites
+                        mealDao.deleteFavorite(meal.getIdMeal());
+                        meal.setFavorite(false);
+                    } else {
+                        // Add to favorites
+                        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+                                Locale.getDefault()).format(new Date());
+                        FavoriteEntity fav = new FavoriteEntity(
+                                meal.getIdMeal(),
+                                meal.getStrMeal(),
+                                meal.getStrMealThumb(),
+                                meal.getStrCategory() != null ? meal.getStrCategory() : "",
+                                meal.getStrArea() != null ? meal.getStrArea() : "",
+                                "",
+                                date);
+                        mealDao.insertFavorite(fav);
+                        meal.setFavorite(true);
+                    }
+                    mainHandler.post(() -> {
+                        if (isAdded() && getContext() != null) {
+                            mealAdapter.notifyItemChanged(position);
+                            Toast.makeText(getContext(),
+                                    meal.isFavorite() ? "Added to favorites"
+                                            : "Removed from favorites",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                });
             }
         });
         rvRecipes.setAdapter(mealAdapter);
@@ -144,7 +179,9 @@ public class HomeFragment extends Fragment {
                         if (response.isSuccessful() && response.body() != null) {
                             List<Category> list = response.body().getCategories();
                             if (list != null) {
-                                mainHandler.post(() -> categoryAdapter.submitList(list));
+                                mainHandler.post(() -> {
+                                    if (isAdded()) categoryAdapter.submitList(list);
+                                });
                             }
                         }
                     }
@@ -152,8 +189,13 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Call<CategoryResponse> call,
                                           @NonNull Throwable t) {
-                        mainHandler.post(() -> Toast.makeText(getContext(),
-                                "Failed to load categories", Toast.LENGTH_SHORT).show());
+                        mainHandler.post(() -> {
+                            if (isAdded() && getContext() != null) {
+                                Toast.makeText(getContext(),
+                                        "Failed to load categories",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
     }
@@ -165,11 +207,20 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<MealResponse> call,
                                            @NonNull Response<MealResponse> response) {
+                        if (!isAdded()) return;
                         swipeRefresh.setRefreshing(false);
                         if (response.isSuccessful() && response.body() != null) {
                             List<Meal> list = response.body().getMeals();
                             if (list != null) {
-                                mainHandler.post(() -> mealAdapter.submitList(list));
+                                // Check favorite status for each meal
+                                executor.execute(() -> {
+                                    for (Meal meal : list) {
+                                        meal.setFavorite(mealDao.isFavorite(meal.getIdMeal()));
+                                    }
+                                    mainHandler.post(() -> {
+                                        if (isAdded()) mealAdapter.submitList(list);
+                                    });
+                                });
                             }
                         }
                     }
@@ -178,9 +229,13 @@ public class HomeFragment extends Fragment {
                     public void onFailure(@NonNull Call<MealResponse> call,
                                           @NonNull Throwable t) {
                         mainHandler.post(() -> {
+                            if (!isAdded()) return;
                             swipeRefresh.setRefreshing(false);
-                            Toast.makeText(getContext(),
-                                    "Failed to load recipes", Toast.LENGTH_SHORT).show();
+                            if (getContext() != null) {
+                                Toast.makeText(getContext(),
+                                        "Failed to load recipes",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         });
                     }
                 });
@@ -193,11 +248,19 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<MealResponse> call,
                                            @NonNull Response<MealResponse> response) {
+                        if (!isAdded()) return;
                         swipeRefresh.setRefreshing(false);
                         if (response.isSuccessful() && response.body() != null) {
                             List<Meal> list = response.body().getMeals();
                             if (list != null) {
-                                mainHandler.post(() -> mealAdapter.submitList(list));
+                                executor.execute(() -> {
+                                    for (Meal meal : list) {
+                                        meal.setFavorite(mealDao.isFavorite(meal.getIdMeal()));
+                                    }
+                                    mainHandler.post(() -> {
+                                        if (isAdded()) mealAdapter.submitList(list);
+                                    });
+                                });
                             }
                         }
                     }
@@ -206,9 +269,13 @@ public class HomeFragment extends Fragment {
                     public void onFailure(@NonNull Call<MealResponse> call,
                                           @NonNull Throwable t) {
                         mainHandler.post(() -> {
+                            if (!isAdded()) return;
                             swipeRefresh.setRefreshing(false);
-                            Toast.makeText(getContext(),
-                                    "Failed to load recipes", Toast.LENGTH_SHORT).show();
+                            if (getContext() != null) {
+                                Toast.makeText(getContext(),
+                                        "Failed to load recipes",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         });
                     }
                 });
