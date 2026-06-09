@@ -30,11 +30,32 @@
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.nutrimeal.fragment.ProfileFragment"
-        android:label="Profile" />
+        android:label="Profile">
+        <action
+            android:id="@+id/action_profile_to_favorites"
+            app:destination="@id/favoritesFragment" />
+        <action
+            android:id="@+id/action_profile_to_notes"
+            app:destination="@id/notesFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.example.nutrimeal.fragment.DetailFragment"
         android:label="Detail" />
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.example.nutrimeal.fragment.FavoritesFragment"
+        android:label="Favorites">
+        <action
+            android:id="@+id/action_favorites_to_detail"
+            app:destination="@id/detailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/notesFragment"
+        android:name="com.example.nutrimeal.fragment.NotesFragment"
+        android:label="Notes" />
 
 </navigation>

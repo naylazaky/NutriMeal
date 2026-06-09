@@ -63,25 +63,13 @@ public class FavoritesFragment extends Fragment {
         adapter = new FavoritesAdapter(fav -> {
             Bundle args = new Bundle();
             args.putString("mealId", fav.getMealId());
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.nav_host_fragment, new DetailFragment())
-                    .addToBackStack(null)
-                    .commit();
-            // Pass args to DetailFragment
-            DetailFragment detail = new DetailFragment();
-            detail.setArguments(args);
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.nav_host_fragment, detail)
-                    .addToBackStack(null)
-                    .commit();
+            androidx.navigation.Navigation.findNavController(requireView())
+                    .navigate(R.id.action_favorites_to_detail, args);
         });
 
         rvFavorites.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvFavorites.setAdapter(adapter);
 
-        // Swipe to delete
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
                 0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override

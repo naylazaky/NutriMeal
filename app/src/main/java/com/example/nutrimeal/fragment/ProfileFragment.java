@@ -67,21 +67,13 @@ public class ProfileFragment extends Fragment {
 
     private void setupRowClicks() {
         rowFavorites.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.nav_host_fragment,
-                            new FavoritesFragment())
-                    .addToBackStack(null)
-                    .commit();
+            androidx.navigation.Navigation.findNavController(requireView())
+                    .navigate(R.id.action_profile_to_favorites);
         });
 
         rowNotes.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.nav_host_fragment,
-                            new NotesFragment())
-                    .addToBackStack(null)
-                    .commit();
+            androidx.navigation.Navigation.findNavController(requireView())
+                    .navigate(R.id.action_profile_to_notes);
         });
     }
 
