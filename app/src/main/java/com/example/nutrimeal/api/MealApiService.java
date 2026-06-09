@@ -1,6 +1,7 @@
 package com.example.nutrimeal.api;
 
 import com.example.nutrimeal.model.CategoryResponse;
+import com.example.nutrimeal.model.MealDetailResponse;
 import com.example.nutrimeal.model.MealResponse;
 
 import retrofit2.Call;
@@ -22,5 +23,5 @@ public interface MealApiService {
     Call<MealResponse> filterByIngredient(@Query("i") String ingredient);
 
     @GET("lookup.php")
-    Call<MealResponse> getMealDetail(@Query("i") String id);
+    Call<MealDetailResponse> getMealDetail(@Query("i") String id);
 }

@@ -90,27 +90,28 @@ public class DetailFragment extends Fragment {
 
     private void loadMealDetail(String mealId) {
         ApiClient.getMealApiService().getMealDetail(mealId)
-                .enqueue(new retrofit2.Callback<MealResponse>() {
+                .enqueue(new retrofit2.Callback<com.example.nutrimeal.model.MealDetailResponse>() {
                     @Override
-                    public void onResponse(@NonNull retrofit2.Call<MealResponse> call,
-                                           @NonNull retrofit2.Response<MealResponse> response) {
+                    public void onResponse(@NonNull retrofit2.Call<com.example.nutrimeal.model.MealDetailResponse> call,
+                                           @NonNull retrofit2.Response<com.example.nutrimeal.model.MealDetailResponse> response) {
                         if (response.isSuccessful() && response.body() != null
-                                && response.body().getMeals() != null) {
-                            // MealResponse returns List<Meal> but detail has MealDetail fields
-                            // We cast via Gson by using MealDetail directly
-                            com.google.gson.Gson gson = new com.google.gson.Gson();
-                            String json = gson.toJson(response.body().getMeals().get(0));
-                            MealDetail meal = gson.fromJson(json, MealDetail.class);
+                                && response.body().getMeals() != null
+                                && !response.body().getMeals().isEmpty()) {
+                            MealDetail meal = response.body().getMeals().get(0);
                             currentMeal = meal;
                             mainHandler.post(() -> populateUI(meal));
                         }
                     }
 
                     @Override
-                    public void onFailure(@NonNull retrofit2.Call<MealResponse> call,
+                    public void onFailure(@NonNull retrofit2.Call<com.example.nutrimeal.model.MealDetailResponse> call,
                                           @NonNull Throwable t) {
-                        mainHandler.post(() -> Toast.makeText(getContext(),
-                                "Failed to load detail", Toast.LENGTH_SHORT).show());
+                        mainHandler.post(() -> {
+                            if (isAdded() && getContext() != null) {
+                                Toast.makeText(getContext(),
+                                        "Failed to load detail", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
     }
