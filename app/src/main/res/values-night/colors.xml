@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="surface_light">#1B1F2A</color>
+    <color name="white">#252836</color>
+    <color name="text_primary_light">#F0EDE8</color>
+    <color name="bottom_nav_light">#252836</color>
+    <color name="divider">#3A3F52</color>
+    <color name="shimmer_base">#2E3244</color>
+    <color name="shimmer_highlight">#363B50</color>
+</resources>

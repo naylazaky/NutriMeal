@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
 import com.example.nutrimeal.R;
+import com.example.nutrimeal.utils.ThemeUtils;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -21,10 +22,11 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Apply saved theme before setContentView
+        ThemeUtils.applyTheme(this);
+
         super.onCreate(savedInstanceState);
-
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-
         setContentView(R.layout.activity_splash);
 
         ImageView ivLogo = findViewById(R.id.iv_logo);
