@@ -94,8 +94,14 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupAdapters() {
-        categoryAdapter = new CategoryAdapter(
-                category -> loadRecipesByCategory(category.getStrCategory()));
+        categoryAdapter = new CategoryAdapter(category -> {
+            if (category.getIdCategory().equals("0")) {
+                // "All" dipilih — load default
+                loadRecipes("chicken");
+            } else {
+                loadRecipesByCategory(category.getStrCategory());
+            }
+        });
         rvCategories.setAdapter(categoryAdapter);
 
         mealAdapter = new MealAdapter(new MealAdapter.OnMealClickListener() {
@@ -109,7 +115,10 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFavoriteClick(Meal meal, int position) {
-                Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
+                if (isAdded() && getContext() != null) {
+                    Toast.makeText(getContext(),
+                            "Added to favorites", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         rvRecipes.setAdapter(mealAdapter);
