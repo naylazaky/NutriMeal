@@ -101,13 +101,14 @@ public class HomeFragment extends Fragment {
         mealAdapter = new MealAdapter(new MealAdapter.OnMealClickListener() {
             @Override
             public void onMealClick(Meal meal) {
-                // TODO: navigate to detail (Step 8)
-                Toast.makeText(getContext(), meal.getStrMeal(), Toast.LENGTH_SHORT).show();
+                Bundle args = new Bundle();
+                args.putString("mealId", meal.getIdMeal());
+                androidx.navigation.Navigation.findNavController(requireView())
+                        .navigate(R.id.action_home_to_detail, args);
             }
 
             @Override
             public void onFavoriteClick(Meal meal, int position) {
-                // TODO: save to favorites (Step 7)
                 Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
             }
         });

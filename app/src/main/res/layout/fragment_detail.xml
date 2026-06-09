@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surface_light">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="80dp"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="260dp">
+
+                <ImageView
+                    android:id="@+id/iv_hero"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/gradient_bottom" />
+
+                <ImageView
+                    android:id="@+id/btn_back"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="16dp"
+                    android:background="@drawable/bg_circle_white"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_arrow_back" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/tv_meal_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_bold"
+                    android:textColor="@color/text_primary_light"
+                    android:textSize="22sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_category"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_chip_accent"
+                        android:fontFamily="@font/inter_regular"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:textColor="@color/white"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/tv_area"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/bg_chip_outline"
+                        android:fontFamily="@font/inter_regular"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp" />
+
+                    <LinearLayout
+                        android:id="@+id/layout_stars"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:orientation="horizontal" />
+
+                </LinearLayout>
+
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tab_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    app:tabIndicatorColor="@color/accent"
+                    app:tabSelectedTextColor="@color/accent"
+                    app:tabTextColor="@color/text_secondary"
+                    app:tabTextAppearance="@style/TabTextAppearance" />
+
+                <FrameLayout
+                    android:id="@+id/tab_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/bottom_actions"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_gravity="bottom"
+        android:background="@color/white"
+        android:elevation="8dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp">
+
+        <ImageView
+            android:id="@+id/btn_favorite"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:src="@drawable/ic_heart_outline" />
+
+        <ImageView
+            android:id="@+id/btn_note"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_note" />
+
+        <ImageView
+            android:id="@+id/btn_share"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_share" />
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
