@@ -91,7 +91,10 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void onFavoriteClick(Meal meal, int position) {
-                Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
+                if (isAdded() && getContext() != null) {
+                    Toast.makeText(getContext(),
+                            "Added to favorites", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         rvResults.setAdapter(mealAdapter);
@@ -99,7 +102,6 @@ public class SearchFragment extends Fragment {
 
     private void setupToggle() {
         toggleMode.check(R.id.btn_search_mode);
-
         toggleMode.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (!isChecked) return;
             if (checkedId == R.id.btn_search_mode) {
@@ -141,8 +143,10 @@ public class SearchFragment extends Fragment {
 
         btnFindRecipes.setOnClickListener(v -> {
             if (fridgeIngredients.isEmpty()) {
-                Toast.makeText(getContext(),
-                        "Add at least one ingredient", Toast.LENGTH_SHORT).show();
+                if (isAdded() && getContext() != null) {
+                    Toast.makeText(getContext(),
+                            "Add at least one ingredient", Toast.LENGTH_SHORT).show();
+                }
                 return;
             }
             searchByIngredient(fridgeIngredients.get(0));
@@ -167,17 +171,25 @@ public class SearchFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<MealResponse> call,
                                            @NonNull Response<MealResponse> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             List<Meal> meals = response.body().getMeals();
-                            mainHandler.post(() ->
-                                    mealAdapter.submitList(meals != null ? meals : new ArrayList<>()));
+                            mainHandler.post(() -> {
+                                if (isAdded()) {
+                                    mealAdapter.submitList(meals != null ? meals : new ArrayList<>());
+                                }
+                            });
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<MealResponse> call, @NonNull Throwable t) {
-                        mainHandler.post(() -> Toast.makeText(getContext(),
-                                "Search failed", Toast.LENGTH_SHORT).show());
+                        mainHandler.post(() -> {
+                            if (isAdded() && getContext() != null) {
+                                Toast.makeText(getContext(),
+                                        "Search failed", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
     }
@@ -188,17 +200,25 @@ public class SearchFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<MealResponse> call,
                                            @NonNull Response<MealResponse> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             List<Meal> meals = response.body().getMeals();
-                            mainHandler.post(() ->
-                                    mealAdapter.submitList(meals != null ? meals : new ArrayList<>()));
+                            mainHandler.post(() -> {
+                                if (isAdded()) {
+                                    mealAdapter.submitList(meals != null ? meals : new ArrayList<>());
+                                }
+                            });
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<MealResponse> call, @NonNull Throwable t) {
-                        mainHandler.post(() -> Toast.makeText(getContext(),
-                                "Search failed", Toast.LENGTH_SHORT).show());
+                        mainHandler.post(() -> {
+                            if (isAdded() && getContext() != null) {
+                                Toast.makeText(getContext(),
+                                        "Search failed", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
     }
