@@ -116,7 +116,8 @@ public class DetailFragment extends Fragment {
                         mainHandler.post(() -> {
                             if (isAdded() && getContext() != null) {
                                 Toast.makeText(getContext(),
-                                        "Failed to load detail", Toast.LENGTH_SHORT).show();
+                                        "Failed to load detail",
+                                        Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -145,6 +146,7 @@ public class DetailFragment extends Fragment {
             btnWatchTutorial.setVisibility(View.GONE);
         }
 
+        // Check favorite status
         executor.execute(() -> {
             isFavorite = mealDao.isFavorite(meal.getIdMeal());
             mainHandler.post(() -> {
@@ -166,19 +168,49 @@ public class DetailFragment extends Fragment {
             int rating = note != null ? note.getStarRating() : 0;
             mainHandler.post(() -> {
                 if (!isAdded()) return;
-                layoutStars.removeAllViews();
-                for (int i = 1; i <= 5; i++) {
-                    ImageView star = new ImageView(requireContext());
-                    LinearLayout.LayoutParams params =
-                            new LinearLayout.LayoutParams(48, 48);
-                    params.setMarginEnd(4);
-                    star.setLayoutParams(params);
-                    star.setImageResource(i <= rating ?
-                            R.drawable.ic_star_filled : R.drawable.ic_star_outline);
-                    layoutStars.addView(star);
-                }
+                renderStars(mealId, rating);
             });
         });
+    }
+
+    private void renderStars(String mealId, int currentRating) {
+        layoutStars.removeAllViews();
+        for (int i = 1; i <= 5; i++) {
+            ImageView star = new ImageView(requireContext());
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(48, 48);
+            params.setMarginEnd(4);
+            star.setLayoutParams(params);
+            star.setImageResource(i <= currentRating ?
+                    R.drawable.ic_star_filled : R.drawable.ic_star_outline);
+
+            final int starIndex = i;
+            star.setOnClickListener(v -> {
+                // Langsung update tampilan bintang
+                renderStars(mealId, starIndex);
+
+                // Simpan ke database
+                executor.execute(() -> {
+                    String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+                            Locale.getDefault()).format(new Date());
+                    NoteEntity existing = mealDao.getNoteByMealId(mealId);
+                    NoteEntity note = new NoteEntity(
+                            mealId,
+                            existing != null ? existing.getNoteText() : "",
+                            starIndex,
+                            date);
+                    mealDao.insertOrUpdateNote(note);
+                    mainHandler.post(() -> {
+                        if (isAdded() && getContext() != null) {
+                            Toast.makeText(getContext(),
+                                    starIndex + " star" + (starIndex > 1 ? "s" : ""),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                });
+            });
+
+            layoutStars.addView(star);
+        }
     }
 
     private void setupTabs(MealDetail meal) {
@@ -232,9 +264,13 @@ public class DetailFragment extends Fragment {
                     String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
                             Locale.getDefault()).format(new Date());
                     FavoriteEntity fav = new FavoriteEntity(
-                            meal.getIdMeal(), meal.getStrMeal(),
-                            meal.getStrMealThumb(), meal.getStrCategory(),
-                            meal.getStrArea(), meal.getStrInstructions(), date);
+                            meal.getIdMeal(),
+                            meal.getStrMeal(),
+                            meal.getStrMealThumb(),
+                            meal.getStrCategory(),
+                            meal.getStrArea(),
+                            meal.getStrInstructions(),
+                            date);
                     mealDao.insertFavorite(fav);
                     isFavorite = true;
                 }
@@ -282,14 +318,20 @@ public class DetailFragment extends Fragment {
                 .setPositiveButton(getString(R.string.save_note), (dialog, which) -> {
                     String noteText = editText.getText().toString().trim();
                     executor.execute(() -> {
+                        NoteEntity existing = mealDao.getNoteByMealId(mealId);
                         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
                                 Locale.getDefault()).format(new Date());
-                        NoteEntity note = new NoteEntity(mealId, noteText, 0, date);
+                        NoteEntity note = new NoteEntity(
+                                mealId,
+                                noteText,
+                                existing != null ? existing.getStarRating() : 0,
+                                date);
                         mealDao.insertOrUpdateNote(note);
                         mainHandler.post(() -> {
                             if (isAdded() && getContext() != null) {
                                 Toast.makeText(getContext(),
-                                        "Note saved", Toast.LENGTH_SHORT).show();
+                                        "Note saved",
+                                        Toast.LENGTH_SHORT).show();
                             }
                         });
                     });
