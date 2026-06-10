@@ -29,12 +29,15 @@ import com.example.nutrimeal.model.MealResponse;
 import com.example.nutrimeal.utils.NetworkUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,6 +57,12 @@ public class HomeFragment extends Fragment {
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
+    // Keyword dari berbagai kategori untuk "All"
+    private final String[] ALL_KEYWORDS = {
+            "beef", "chicken", "salmon", "pasta",
+            "lamb", "potato", "prawn"
+    };
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -67,7 +76,6 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mealDao = new MealDao(requireContext());
-
         bindViews(view);
         setupGreeting();
         setupAdapters();
@@ -105,7 +113,7 @@ public class HomeFragment extends Fragment {
     private void setupAdapters() {
         categoryAdapter = new CategoryAdapter(category -> {
             if (category.getIdCategory().equals("0")) {
-                loadRecipes("chicken");
+                loadMixedRecipes();
             } else {
                 loadRecipesByCategory(category.getStrCategory());
             }
@@ -126,11 +134,9 @@ public class HomeFragment extends Fragment {
                 executor.execute(() -> {
                     boolean isFav = mealDao.isFavorite(meal.getIdMeal());
                     if (isFav) {
-                        // Remove from favorites
                         mealDao.deleteFavorite(meal.getIdMeal());
                         meal.setFavorite(false);
                     } else {
-                        // Add to favorites
                         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
                                 Locale.getDefault()).format(new Date());
                         FavoriteEntity fav = new FavoriteEntity(
@@ -163,10 +169,75 @@ public class HomeFragment extends Fragment {
         if (NetworkUtils.isNetworkAvailable(requireContext())) {
             layoutOffline.setVisibility(View.GONE);
             loadCategories();
-            loadRecipes("chicken");
+            loadMixedRecipes();
         } else {
             layoutOffline.setVisibility(View.VISIBLE);
             swipeRefresh.setRefreshing(false);
+        }
+    }
+
+    /**
+     * Load 2-3 resep dari beberapa keyword berbeda,
+     * gabungkan dan acak hasilnya supaya campuran
+     */
+    private void loadMixedRecipes() {
+        swipeRefresh.setRefreshing(true);
+        final List<Meal> mixedList = new ArrayList<>();
+
+        // Pilih 4 keyword acak dari ALL_KEYWORDS
+        List<String> keywords = new ArrayList<>();
+        Collections.addAll(keywords, ALL_KEYWORDS);
+        Collections.shuffle(keywords);
+        List<String> selected = keywords.subList(0, 4);
+
+        AtomicInteger counter = new AtomicInteger(0);
+        int total = selected.size();
+
+        for (String keyword : selected) {
+            ApiClient.getMealApiService().searchMeals(keyword)
+                    .enqueue(new Callback<MealResponse>() {
+                        @Override
+                        public void onResponse(@NonNull Call<MealResponse> call,
+                                               @NonNull Response<MealResponse> response) {
+                            if (response.isSuccessful() && response.body() != null
+                                    && response.body().getMeals() != null) {
+                                List<Meal> meals = response.body().getMeals();
+                                // Ambil max 3 dari tiap keyword
+                                int take = Math.min(3, meals.size());
+                                synchronized (mixedList) {
+                                    mixedList.addAll(meals.subList(0, take));
+                                }
+                            }
+
+                            // Kalau semua request sudah selesai
+                            if (counter.incrementAndGet() == total) {
+                                executor.execute(() -> {
+                                    // Acak urutan
+                                    Collections.shuffle(mixedList);
+                                    // Check favorites
+                                    for (Meal meal : mixedList) {
+                                        meal.setFavorite(mealDao.isFavorite(meal.getIdMeal()));
+                                    }
+                                    mainHandler.post(() -> {
+                                        if (isAdded()) {
+                                            swipeRefresh.setRefreshing(false);
+                                            mealAdapter.submitList(new ArrayList<>(mixedList));
+                                        }
+                                    });
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<MealResponse> call,
+                                              @NonNull Throwable t) {
+                            if (counter.incrementAndGet() == total) {
+                                mainHandler.post(() -> {
+                                    if (isAdded()) swipeRefresh.setRefreshing(false);
+                                });
+                            }
+                        }
+                    });
         }
     }
 
@@ -200,47 +271,6 @@ public class HomeFragment extends Fragment {
                 });
     }
 
-    private void loadRecipes(String keyword) {
-        swipeRefresh.setRefreshing(true);
-        ApiClient.getMealApiService().searchMeals(keyword)
-                .enqueue(new Callback<MealResponse>() {
-                    @Override
-                    public void onResponse(@NonNull Call<MealResponse> call,
-                                           @NonNull Response<MealResponse> response) {
-                        if (!isAdded()) return;
-                        swipeRefresh.setRefreshing(false);
-                        if (response.isSuccessful() && response.body() != null) {
-                            List<Meal> list = response.body().getMeals();
-                            if (list != null) {
-                                // Check favorite status for each meal
-                                executor.execute(() -> {
-                                    for (Meal meal : list) {
-                                        meal.setFavorite(mealDao.isFavorite(meal.getIdMeal()));
-                                    }
-                                    mainHandler.post(() -> {
-                                        if (isAdded()) mealAdapter.submitList(list);
-                                    });
-                                });
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<MealResponse> call,
-                                          @NonNull Throwable t) {
-                        mainHandler.post(() -> {
-                            if (!isAdded()) return;
-                            swipeRefresh.setRefreshing(false);
-                            if (getContext() != null) {
-                                Toast.makeText(getContext(),
-                                        "Failed to load recipes",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                });
-    }
-
     private void loadRecipesByCategory(String category) {
         swipeRefresh.setRefreshing(true);
         ApiClient.getMealApiService().filterByCategory(category)
@@ -253,6 +283,10 @@ public class HomeFragment extends Fragment {
                         if (response.isSuccessful() && response.body() != null) {
                             List<Meal> list = response.body().getMeals();
                             if (list != null) {
+                                // Set category manual karena filter API tidak return strCategory
+                                for (Meal meal : list) {
+                                    meal.setStrCategory(category);
+                                }
                                 executor.execute(() -> {
                                     for (Meal meal : list) {
                                         meal.setFavorite(mealDao.isFavorite(meal.getIdMeal()));

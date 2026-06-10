@@ -24,4 +24,7 @@ public interface MealApiService {
 
     @GET("lookup.php")
     Call<MealDetailResponse> getMealDetail(@Query("i") String id);
+
+    @GET("random.php")
+    Call<MealDetailResponse> getRandomMeal();
 }

@@ -79,8 +79,22 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
 
         void bind(Meal meal) {
             tvName.setText(meal.getStrMeal());
-            tvCategory.setText(meal.getStrCategory());
-            tvArea.setText(meal.getStrArea());
+
+            // Tampilkan category badge hanya kalau ada
+            if (meal.getStrCategory() != null && !meal.getStrCategory().isEmpty()) {
+                tvCategory.setVisibility(View.VISIBLE);
+                tvCategory.setText(meal.getStrCategory());
+            } else {
+                tvCategory.setVisibility(View.GONE);
+            }
+
+            // Tampilkan area badge hanya kalau ada
+            if (meal.getStrArea() != null && !meal.getStrArea().isEmpty()) {
+                tvArea.setVisibility(View.VISIBLE);
+                tvArea.setText(meal.getStrArea());
+            } else {
+                tvArea.setVisibility(View.GONE);
+            }
 
             Glide.with(itemView.getContext())
                     .load(meal.getStrMealThumb())
@@ -89,8 +103,7 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
                     .into(ivThumb);
 
             ivFavorite.setImageResource(
-                    meal.isFavorite() ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline
-            );
+                    meal.isFavorite() ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
 
             itemView.setOnClickListener(v -> listener.onMealClick(meal));
             ivFavorite.setOnClickListener(v ->
