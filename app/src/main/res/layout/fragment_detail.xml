@@ -9,6 +9,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:overScrollMode="never"
         android:paddingBottom="80dp"
         android:clipToPadding="false">
 
@@ -17,6 +18,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Hero Image -->
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="260dp">
@@ -44,6 +46,7 @@
 
             </FrameLayout>
 
+            <!-- Content -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -58,6 +61,7 @@
                     android:textColor="@color/text_primary_light"
                     android:textSize="22sp" />
 
+                <!-- Badges + stars -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -101,6 +105,22 @@
 
                 </LinearLayout>
 
+                <!-- Watch Tutorial button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_watch_tutorial"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="Watch Tutorial on YouTube"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    app:backgroundTint="#FF0000"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_youtube"
+                    app:iconGravity="textStart" />
+
+                <!-- Tabs -->
                 <com.google.android.material.tabs.TabLayout
                     android:id="@+id/tab_layout"
                     android:layout_width="match_parent"
@@ -123,6 +143,7 @@
 
     </androidx.core.widget.NestedScrollView>
 
+    <!-- Bottom action bar -->
     <LinearLayout
         android:id="@+id/bottom_actions"
         android:layout_width="match_parent"
@@ -140,7 +161,6 @@
             android:layout_width="0dp"
             android:layout_height="32dp"
             android:layout_weight="1"
-            android:gravity="center"
             android:src="@drawable/ic_heart_outline" />
 
         <ImageView

@@ -1,6 +1,7 @@
 package com.example.nutrimeal.fragment;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -26,8 +27,9 @@ import com.example.nutrimeal.api.ApiClient;
 import com.example.nutrimeal.database.MealDao;
 import com.example.nutrimeal.model.FavoriteEntity;
 import com.example.nutrimeal.model.MealDetail;
-import com.example.nutrimeal.model.MealResponse;
+import com.example.nutrimeal.model.MealDetailResponse;
 import com.example.nutrimeal.model.NoteEntity;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
 
 import java.text.SimpleDateFormat;
@@ -36,6 +38,10 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class DetailFragment extends Fragment {
 
     private ImageView ivHero, btnBack, btnFavorite, btnNote, btnShare;
@@ -43,6 +49,7 @@ public class DetailFragment extends Fragment {
     private TabLayout tabLayout;
     private FrameLayout tabContent;
     private LinearLayout layoutStars;
+    private MaterialButton btnWatchTutorial;
 
     private MealDetail currentMeal;
     private MealDao mealDao;
@@ -64,7 +71,6 @@ public class DetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mealDao = new MealDao(requireContext());
-
         bindViews(view);
 
         String mealId = getArguments() != null ? getArguments().getString("mealId") : "";
@@ -86,14 +92,15 @@ public class DetailFragment extends Fragment {
         tabLayout = view.findViewById(R.id.tab_layout);
         tabContent = view.findViewById(R.id.tab_content);
         layoutStars = view.findViewById(R.id.layout_stars);
+        btnWatchTutorial = view.findViewById(R.id.btn_watch_tutorial);
     }
 
     private void loadMealDetail(String mealId) {
         ApiClient.getMealApiService().getMealDetail(mealId)
-                .enqueue(new retrofit2.Callback<com.example.nutrimeal.model.MealDetailResponse>() {
+                .enqueue(new Callback<MealDetailResponse>() {
                     @Override
-                    public void onResponse(@NonNull retrofit2.Call<com.example.nutrimeal.model.MealDetailResponse> call,
-                                           @NonNull retrofit2.Response<com.example.nutrimeal.model.MealDetailResponse> response) {
+                    public void onResponse(@NonNull Call<MealDetailResponse> call,
+                                           @NonNull Response<MealDetailResponse> response) {
                         if (response.isSuccessful() && response.body() != null
                                 && response.body().getMeals() != null
                                 && !response.body().getMeals().isEmpty()) {
@@ -104,7 +111,7 @@ public class DetailFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(@NonNull retrofit2.Call<com.example.nutrimeal.model.MealDetailResponse> call,
+                    public void onFailure(@NonNull Call<MealDetailResponse> call,
                                           @NonNull Throwable t) {
                         mainHandler.post(() -> {
                             if (isAdded() && getContext() != null) {
@@ -126,10 +133,26 @@ public class DetailFragment extends Fragment {
                 .centerCrop()
                 .into(ivHero);
 
+        // YouTube button
+        if (meal.getStrYoutube() != null && !meal.getStrYoutube().isEmpty()) {
+            btnWatchTutorial.setVisibility(View.VISIBLE);
+            btnWatchTutorial.setOnClickListener(v -> {
+                Intent intent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse(meal.getStrYoutube()));
+                startActivity(intent);
+            });
+        } else {
+            btnWatchTutorial.setVisibility(View.GONE);
+        }
+
         executor.execute(() -> {
             isFavorite = mealDao.isFavorite(meal.getIdMeal());
-            mainHandler.post(() -> btnFavorite.setImageResource(
-                    isFavorite ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline));
+            mainHandler.post(() -> {
+                if (isAdded()) {
+                    btnFavorite.setImageResource(isFavorite ?
+                            R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
+                }
+            });
         });
 
         loadStarRating(meal.getIdMeal());
@@ -142,6 +165,7 @@ public class DetailFragment extends Fragment {
             NoteEntity note = mealDao.getNoteByMealId(mealId);
             int rating = note != null ? note.getStarRating() : 0;
             mainHandler.post(() -> {
+                if (!isAdded()) return;
                 layoutStars.removeAllViews();
                 for (int i = 1; i <= 5; i++) {
                     ImageView star = new ImageView(requireContext());
@@ -215,6 +239,7 @@ public class DetailFragment extends Fragment {
                     isFavorite = true;
                 }
                 mainHandler.post(() -> {
+                    if (!isAdded()) return;
                     btnFavorite.setImageResource(isFavorite ?
                             R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
                     Toast.makeText(getContext(),
@@ -239,10 +264,6 @@ public class DetailFragment extends Fragment {
     }
 
     private void showNoteDialog(String mealId) {
-        android.app.AlertDialog.Builder builder =
-                new android.app.AlertDialog.Builder(requireContext());
-        builder.setTitle("My Note");
-
         android.widget.EditText editText = new android.widget.EditText(requireContext());
         editText.setHint("Write your note here...");
         int pad = (int) (16 * getResources().getDisplayMetrics().density);
@@ -255,19 +276,25 @@ public class DetailFragment extends Fragment {
             });
         });
 
-        builder.setView(editText);
-        builder.setPositiveButton(getString(R.string.save_note), (dialog, which) -> {
-            String noteText = editText.getText().toString().trim();
-            executor.execute(() -> {
-                String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-                        Locale.getDefault()).format(new Date());
-                NoteEntity note = new NoteEntity(mealId, noteText, 0, date);
-                mealDao.insertOrUpdateNote(note);
-                mainHandler.post(() -> Toast.makeText(getContext(),
-                        "Note saved", Toast.LENGTH_SHORT).show());
-            });
-        });
-        builder.setNegativeButton(getString(R.string.cancel), null);
-        builder.show();
+        new android.app.AlertDialog.Builder(requireContext())
+                .setTitle("My Note")
+                .setView(editText)
+                .setPositiveButton(getString(R.string.save_note), (dialog, which) -> {
+                    String noteText = editText.getText().toString().trim();
+                    executor.execute(() -> {
+                        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+                                Locale.getDefault()).format(new Date());
+                        NoteEntity note = new NoteEntity(mealId, noteText, 0, date);
+                        mealDao.insertOrUpdateNote(note);
+                        mainHandler.post(() -> {
+                            if (isAdded() && getContext() != null) {
+                                Toast.makeText(getContext(),
+                                        "Note saved", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    });
+                })
+                .setNegativeButton(getString(R.string.cancel), null)
+                .show();
     }
 }
