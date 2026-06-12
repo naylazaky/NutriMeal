@@ -44,7 +44,6 @@ public class SearchFragment extends Fragment {
     private MealAdapter mealAdapter;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    // ✅ Static — tetap ada walau fragment di-recreate saat back dari detail
     private static final List<Meal> savedResults = new ArrayList<>();
     private static String savedSearchQuery = "";
     private static String savedIngredientQuery = "";
@@ -69,7 +68,6 @@ public class SearchFragment extends Fragment {
         setupSearchMode();
         setupFridgeMode();
 
-        // ✅ Restore hasil dan keyword setelah balik dari detail
         isRestoringState = true;
         if (!savedSearchQuery.isEmpty()) {
             etSearch.setText(savedSearchQuery);
@@ -127,7 +125,7 @@ public class SearchFragment extends Fragment {
                 layoutSearchMode.setVisibility(View.GONE);
                 layoutFridgeMode.setVisibility(View.VISIBLE);
             }
-            // Clear hasil saat ganti mode
+
             savedResults.clear();
             savedSearchQuery = "";
             savedIngredientQuery = "";
@@ -142,7 +140,7 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (isRestoringState) return; // ✅ skip saat restore
+                if (isRestoringState) return;
                 String query = s.toString().trim();
                 savedSearchQuery = query;
                 if (query.length() >= 2) {
@@ -190,7 +188,7 @@ public class SearchFragment extends Fragment {
                             List<Meal> meals = response.body().getMeals();
                             List<Meal> result = meals != null ? meals : new ArrayList<>();
                             savedResults.clear();
-                            savedResults.addAll(result); // ✅ simpan hasil
+                            savedResults.addAll(result);
                             mainHandler.post(() -> {
                                 if (isAdded()) mealAdapter.submitList(new ArrayList<>(result));
                             });
@@ -218,7 +216,7 @@ public class SearchFragment extends Fragment {
                             List<Meal> meals = response.body().getMeals();
                             List<Meal> result = meals != null ? meals : new ArrayList<>();
                             savedResults.clear();
-                            savedResults.addAll(result); // ✅ simpan hasil
+                            savedResults.addAll(result);
                             mainHandler.post(() -> {
                                 if (isAdded()) {
                                     mealAdapter.submitList(new ArrayList<>(result));

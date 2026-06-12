@@ -20,8 +20,6 @@ public class MealDao {
         dbHelper = NutriMealDatabase.getInstance(context);
     }
 
-    // ===================== FAVORITES =====================
-
     public void insertFavorite(int userId, FavoriteEntity favorite) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -87,8 +85,6 @@ public class MealDao {
         return list;
     }
 
-    // ===================== NOTES =====================
-
     public void insertOrUpdateNote(int userId, NoteEntity note) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -110,7 +106,6 @@ public class MealDao {
                 new String[]{String.valueOf(userId), mealId});
     }
 
-    // ✅ Method yang hilang — dipakai di DetailFragment
     public NoteEntity getNoteByMealId(int userId, String mealId) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.query(NutriMealDatabase.TABLE_NOTES,
@@ -146,7 +141,6 @@ public class MealDao {
 
         if (cursor.moveToFirst()) {
             do {
-                // ✅ Fix — tambah mealName sebagai parameter ke-2
                 NoteEntity note = new NoteEntity(
                         cursor.getString(cursor.getColumnIndexOrThrow(NutriMealDatabase.COL_MEAL_ID)),
                         cursor.getString(cursor.getColumnIndexOrThrow(NutriMealDatabase.COL_MEAL_NAME)),
@@ -161,8 +155,6 @@ public class MealDao {
         cursor.close();
         return list;
     }
-
-    // ===================== PLANNER =====================
 
     public void insertOrUpdatePlanner(int userId, PlannerEntity planner) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -208,8 +200,6 @@ public class MealDao {
         cursor.close();
         return list;
     }
-
-    // ===================== FRIDGE =====================
 
     public void insertFridgeIngredient(int userId, String ingredientName, String dateAdded) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();

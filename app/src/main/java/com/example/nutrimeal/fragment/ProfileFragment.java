@@ -60,7 +60,6 @@ public class ProfileFragment extends Fragment {
                             && result.getData() != null) {
                         Uri imageUri = result.getData().getData();
                         if (imageUri != null) {
-                            // Persist read permission
                             requireActivity().getContentResolver()
                                     .takePersistableUriPermission(imageUri,
                                             Intent.FLAG_GRANT_READ_URI_PERMISSION);
