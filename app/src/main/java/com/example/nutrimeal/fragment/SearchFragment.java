@@ -25,8 +25,6 @@ import com.example.nutrimeal.model.Meal;
 import com.example.nutrimeal.model.MealResponse;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +38,18 @@ public class SearchFragment extends Fragment {
     private MaterialButtonToggleGroup toggleMode;
     private LinearLayout layoutSearchMode, layoutFridgeMode;
     private EditText etSearch, etIngredient;
-    private MaterialButton btnAddIngredient, btnFindRecipes;
-    private ChipGroup chipGroupIngredients;
+    private MaterialButton btnFindRecipes;
     private RecyclerView rvResults;
 
     private MealAdapter mealAdapter;
-    private final List<String> fridgeIngredients = new ArrayList<>();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
+
+    // ✅ Static — tetap ada walau fragment di-recreate saat back dari detail
+    private static final List<Meal> savedResults = new ArrayList<>();
+    private static String savedSearchQuery = "";
+    private static String savedIngredientQuery = "";
+
+    private boolean isRestoringState = false;
 
     @Nullable
     @Override
@@ -65,6 +68,21 @@ public class SearchFragment extends Fragment {
         setupToggle();
         setupSearchMode();
         setupFridgeMode();
+
+        // ✅ Restore hasil dan keyword setelah balik dari detail
+        isRestoringState = true;
+        if (!savedSearchQuery.isEmpty()) {
+            etSearch.setText(savedSearchQuery);
+            etSearch.setSelection(savedSearchQuery.length());
+        }
+        if (!savedIngredientQuery.isEmpty()) {
+            etIngredient.setText(savedIngredientQuery);
+            etIngredient.setSelection(savedIngredientQuery.length());
+        }
+        if (!savedResults.isEmpty()) {
+            mealAdapter.submitList(new ArrayList<>(savedResults));
+        }
+        isRestoringState = false;
     }
 
     private void bindViews(View view) {
@@ -73,9 +91,7 @@ public class SearchFragment extends Fragment {
         layoutFridgeMode = view.findViewById(R.id.layout_fridge_mode);
         etSearch = view.findViewById(R.id.et_search);
         etIngredient = view.findViewById(R.id.et_ingredient);
-        btnAddIngredient = view.findViewById(R.id.btn_add_ingredient);
         btnFindRecipes = view.findViewById(R.id.btn_find_recipes);
-        chipGroupIngredients = view.findViewById(R.id.chip_group_ingredients);
         rvResults = view.findViewById(R.id.rv_search_results);
     }
 
@@ -111,6 +127,11 @@ public class SearchFragment extends Fragment {
                 layoutSearchMode.setVisibility(View.GONE);
                 layoutFridgeMode.setVisibility(View.VISIBLE);
             }
+            // Clear hasil saat ganti mode
+            savedResults.clear();
+            savedSearchQuery = "";
+            savedIngredientQuery = "";
+            mealAdapter.submitList(new ArrayList<>());
         });
     }
 
@@ -121,10 +142,13 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                if (isRestoringState) return; // ✅ skip saat restore
                 String query = s.toString().trim();
+                savedSearchQuery = query;
                 if (query.length() >= 2) {
                     searchRecipes(query);
                 } else if (query.isEmpty()) {
+                    savedResults.clear();
                     mealAdapter.submitList(new ArrayList<>());
                 }
             }
@@ -132,37 +156,27 @@ public class SearchFragment extends Fragment {
     }
 
     private void setupFridgeMode() {
-        btnAddIngredient.setOnClickListener(v -> {
-            String ingredient = etIngredient.getText().toString().trim();
-            if (!ingredient.isEmpty() && !fridgeIngredients.contains(ingredient)) {
-                fridgeIngredients.add(ingredient);
-                addChip(ingredient);
-                etIngredient.setText("");
-            }
-        });
-
         btnFindRecipes.setOnClickListener(v -> {
-            if (fridgeIngredients.isEmpty()) {
+            String ingredient = etIngredient.getText().toString().trim();
+            if (ingredient.isEmpty()) {
                 if (isAdded() && getContext() != null) {
                     Toast.makeText(getContext(),
-                            "Add at least one ingredient", Toast.LENGTH_SHORT).show();
+                            "Enter an ingredient first", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
-            searchByIngredient(fridgeIngredients.get(0));
+            savedIngredientQuery = ingredient;
+            searchByIngredient(ingredient);
         });
-    }
 
-    private void addChip(String ingredient) {
-        Chip chip = new Chip(requireContext());
-        chip.setText(ingredient);
-        chip.setCloseIconVisible(true);
-        chip.setChipBackgroundColorResource(R.color.surface_light);
-        chip.setOnCloseIconClickListener(v -> {
-            fridgeIngredients.remove(ingredient);
-            chipGroupIngredients.removeView(chip);
+        etIngredient.setOnEditorActionListener((v, actionId, event) -> {
+            String ingredient = etIngredient.getText().toString().trim();
+            if (!ingredient.isEmpty()) {
+                savedIngredientQuery = ingredient;
+                searchByIngredient(ingredient);
+            }
+            return true;
         });
-        chipGroupIngredients.addView(chip);
     }
 
     private void searchRecipes(String query) {
@@ -174,10 +188,11 @@ public class SearchFragment extends Fragment {
                         if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             List<Meal> meals = response.body().getMeals();
+                            List<Meal> result = meals != null ? meals : new ArrayList<>();
+                            savedResults.clear();
+                            savedResults.addAll(result); // ✅ simpan hasil
                             mainHandler.post(() -> {
-                                if (isAdded()) {
-                                    mealAdapter.submitList(meals != null ? meals : new ArrayList<>());
-                                }
+                                if (isAdded()) mealAdapter.submitList(new ArrayList<>(result));
                             });
                         }
                     }
@@ -185,10 +200,8 @@ public class SearchFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Call<MealResponse> call, @NonNull Throwable t) {
                         mainHandler.post(() -> {
-                            if (isAdded() && getContext() != null) {
-                                Toast.makeText(getContext(),
-                                        "Search failed", Toast.LENGTH_SHORT).show();
-                            }
+                            if (isAdded() && getContext() != null)
+                                Toast.makeText(getContext(), "Search failed", Toast.LENGTH_SHORT).show();
                         });
                     }
                 });
@@ -203,9 +216,16 @@ public class SearchFragment extends Fragment {
                         if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             List<Meal> meals = response.body().getMeals();
+                            List<Meal> result = meals != null ? meals : new ArrayList<>();
+                            savedResults.clear();
+                            savedResults.addAll(result); // ✅ simpan hasil
                             mainHandler.post(() -> {
                                 if (isAdded()) {
-                                    mealAdapter.submitList(meals != null ? meals : new ArrayList<>());
+                                    mealAdapter.submitList(new ArrayList<>(result));
+                                    if (result.isEmpty() && getContext() != null) {
+                                        Toast.makeText(getContext(),
+                                                "No recipes found", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             });
                         }
@@ -214,10 +234,8 @@ public class SearchFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Call<MealResponse> call, @NonNull Throwable t) {
                         mainHandler.post(() -> {
-                            if (isAdded() && getContext() != null) {
-                                Toast.makeText(getContext(),
-                                        "Search failed", Toast.LENGTH_SHORT).show();
-                            }
+                            if (isAdded() && getContext() != null)
+                                Toast.makeText(getContext(), "Search failed", Toast.LENGTH_SHORT).show();
                         });
                     }
                 });

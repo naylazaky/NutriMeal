@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_bold"
             android:text="Find Recipes"
-            android:textColor="@color/text_primary_dark"
+            android:textColor="#FFFFFF"
             android:textSize="22sp" />
 
         <com.google.android.material.button.MaterialButtonToggleGroup
@@ -41,9 +41,11 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/inter_regular"
                 android:text="@string/search_recipe"
+                android:textColor="#FFFFFF"
                 android:textSize="13sp"
-                app:strokeColor="@color/accent"
-                app:strokeWidth="1dp" />
+                app:backgroundTint="@color/selector_toggle_bg"
+                app:strokeColor="#FFFFFF"
+                app:strokeWidth="1.5dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_fridge_mode"
@@ -53,9 +55,12 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/inter_regular"
                 android:text="@string/whats_in_fridge"
+                android:textColor="#FFFFFF"
                 android:textSize="13sp"
-                app:strokeColor="@color/accent"
-                app:strokeWidth="1dp" />
+                app:backgroundTint="@color/selector_toggle_bg"
+                app:strokeColor="#FFFFFF"
+                app:strokeWidth="1.5dp" />
+
         </com.google.android.material.button.MaterialButtonToggleGroup>
     </LinearLayout>
 
@@ -92,7 +97,7 @@
                 android:hint="@string/search_hint"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
-                android:textColor="@color/text_primary_light"
+                android:textColor="#1B1F2A"
                 android:textColorHint="@color/text_secondary"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -130,40 +135,25 @@
                     android:background="@null"
                     android:fontFamily="@font/inter_regular"
                     android:hint="@string/add_ingredient"
-                    android:imeOptions="actionDone"
+                    android:imeOptions="actionSearch"
                     android:inputType="text"
-                    android:textColor="@color/text_primary_light"
+                    android:textColor="#1B1F2A"
                     android:textColorHint="@color/text_secondary"
                     android:textSize="14sp" />
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_add_ingredient"
+                android:id="@+id/btn_find_recipes"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:fontFamily="@font/inter_regular"
-                android:text="Add"
+                android:text="@string/find_recipes"
                 android:textSize="13sp"
                 app:backgroundTint="@color/accent"
                 app:cornerRadius="12dp" />
+
         </LinearLayout>
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chip_group_ingredients"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_find_recipes"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="12dp"
-            android:fontFamily="@font/inter_regular"
-            android:text="@string/find_recipes"
-            android:textSize="14sp"
-            app:backgroundTint="@color/accent"
-            app:cornerRadius="12dp" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -177,4 +167,5 @@
         android:paddingTop="8dp"
         android:paddingBottom="16dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
 </LinearLayout>

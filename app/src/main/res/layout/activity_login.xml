@@ -39,7 +39,7 @@
                     android:layout_marginTop="16dp"
                     android:fontFamily="@font/poppins_bold"
                     android:text="Welcome Back"
-                    android:textColor="@color/text_primary_light"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textSize="24sp" />
 
                 <TextView
@@ -58,7 +58,7 @@
                 android:layout_marginBottom="8dp"
                 android:fontFamily="@font/inter_regular"
                 android:text="Username"
-                android:textColor="@color/text_primary_light"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="14sp" />
 
             <EditText
@@ -71,7 +71,7 @@
                 android:inputType="text"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:textColor="@color/text_primary_light"
+                android:textColor="#1B1F2A"
                 android:textColorHint="@color/text_secondary"
                 android:textSize="14sp" />
 
@@ -82,7 +82,7 @@
                 android:layout_marginBottom="8dp"
                 android:fontFamily="@font/inter_regular"
                 android:text="Password"
-                android:textColor="@color/text_primary_light"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="14sp" />
 
             <EditText
@@ -95,7 +95,7 @@
                 android:inputType="textPassword"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:textColor="@color/text_primary_light"
+                android:textColor="#1B1F2A"
                 android:textColorHint="@color/text_secondary"
                 android:textSize="14sp" />
 
