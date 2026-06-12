@@ -34,14 +34,6 @@
                     android:layout_gravity="bottom"
                     android:background="@drawable/gradient_bottom" />
 
-                <ImageView
-                    android:id="@+id/btn_back"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_margin="16dp"
-                    android:background="@drawable/bg_circle_white"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_arrow_back" />
             </FrameLayout>
 
             <LinearLayout
@@ -137,6 +129,17 @@
 
     </androidx.core.widget.NestedScrollView>
 
+    <ImageView
+        android:id="@+id/btn_back"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/bg_circle_white"
+        android:padding="8dp"
+        android:src="@drawable/ic_arrow_back"
+        android:elevation="10dp" />
+
     <LinearLayout
         android:id="@+id/bottom_actions"
         android:layout_width="match_parent"
@@ -201,4 +204,5 @@
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

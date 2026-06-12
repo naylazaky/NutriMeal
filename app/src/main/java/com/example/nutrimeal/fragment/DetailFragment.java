@@ -98,6 +98,15 @@ public class DetailFragment extends Fragment {
         tabContent = view.findViewById(R.id.tab_content);
         layoutStars = view.findViewById(R.id.layout_stars);
         btnWatchTutorial = view.findViewById(R.id.btn_watch_tutorial);
+
+        btnBack.setOnApplyWindowInsetsListener((v, insets) -> {
+            int statusBarHeight = insets.getSystemWindowInsetTop();
+            ViewGroup.MarginLayoutParams params =
+                    (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            params.topMargin = statusBarHeight + 16;
+            v.setLayoutParams(params);
+            return insets;
+        });
     }
 
     private void loadMealDetail(String mealId) {
