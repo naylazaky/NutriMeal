@@ -20,6 +20,7 @@ import com.example.nutrimeal.R;
 import com.example.nutrimeal.adapter.FavoritesAdapter;
 import com.example.nutrimeal.database.MealDao;
 import com.example.nutrimeal.model.FavoriteEntity;
+import com.example.nutrimeal.utils.SessionManager;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -31,6 +32,8 @@ public class FavoritesFragment extends Fragment {
     private TextView tvEmpty;
     private FavoritesAdapter adapter;
     private MealDao mealDao;
+    private SessionManager sessionManager;
+    private int userId;
     private List<FavoriteEntity> favoritesList;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -49,6 +52,9 @@ public class FavoritesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mealDao = new MealDao(requireContext());
+        sessionManager = new SessionManager(requireContext());
+        userId = sessionManager.getUserId();
+
         rvFavorites = view.findViewById(R.id.rv_favorites);
         tvEmpty = view.findViewById(R.id.tv_empty);
 
@@ -63,6 +69,8 @@ public class FavoritesFragment extends Fragment {
         adapter = new FavoritesAdapter(fav -> {
             Bundle args = new Bundle();
             args.putString("mealId", fav.getMealId());
+            DetailFragment detail = new DetailFragment();
+            detail.setArguments(args);
             androidx.navigation.Navigation.findNavController(requireView())
                     .navigate(R.id.action_favorites_to_detail, args);
         });
@@ -70,6 +78,7 @@ public class FavoritesFragment extends Fragment {
         rvFavorites.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvFavorites.setAdapter(adapter);
 
+        // Swipe to delete
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
                 0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -84,7 +93,7 @@ public class FavoritesFragment extends Fragment {
                 int position = vh.getAdapterPosition();
                 FavoriteEntity fav = favoritesList.get(position);
                 executor.execute(() -> {
-                    mealDao.deleteFavorite(fav.getMealId());
+                    mealDao.deleteFavorite(userId, fav.getMealId());
                     mainHandler.post(() -> {
                         favoritesList.remove(position);
                         adapter.submitList(favoritesList);
@@ -103,7 +112,7 @@ public class FavoritesFragment extends Fragment {
 
     private void loadFavorites() {
         executor.execute(() -> {
-            favoritesList = mealDao.getAllFavorites();
+            favoritesList = mealDao.getAllFavorites(userId);
             mainHandler.post(() -> {
                 if (isAdded()) {
                     adapter.submitList(favoritesList);

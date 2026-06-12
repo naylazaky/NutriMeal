@@ -22,6 +22,7 @@ import com.example.nutrimeal.adapter.PlannerAdapter;
 import com.example.nutrimeal.database.MealDao;
 import com.example.nutrimeal.model.FavoriteEntity;
 import com.example.nutrimeal.model.PlannerEntity;
+import com.example.nutrimeal.utils.SessionManager;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ public class PlannerFragment extends Fragment {
     private RecyclerView rvPlanner;
     private PlannerAdapter plannerAdapter;
     private MealDao mealDao;
+    private SessionManager sessionManager;
+    private int userId;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -56,6 +59,9 @@ public class PlannerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mealDao = new MealDao(requireContext());
+        sessionManager = new SessionManager(requireContext());
+        userId = sessionManager.getUserId();
+
         rvPlanner = view.findViewById(R.id.rv_planner);
 
         setupPlanner();
@@ -86,7 +92,7 @@ public class PlannerFragment extends Fragment {
 
     private void loadPlannerData() {
         executor.execute(() -> {
-            List<PlannerEntity> savedPlanner = mealDao.getAllPlanner();
+            List<PlannerEntity> savedPlanner = mealDao.getAllPlanner(userId);
             mainHandler.post(() -> {
                 for (PlannerEntity saved : savedPlanner) {
                     for (int i = 0; i < DAYS.length; i++) {
@@ -119,7 +125,7 @@ public class PlannerFragment extends Fragment {
                         fav.getMealId(),
                         fav.getMealName(),
                         fav.getMealThumb());
-                mealDao.insertOrUpdatePlanner(updated);
+                mealDao.insertOrUpdatePlanner(userId, updated);
                 mainHandler.post(() -> {
                     plannerAdapter.updateItem(position,
                             fav.getMealId(),
@@ -132,9 +138,11 @@ public class PlannerFragment extends Fragment {
 
         rvPicker.setAdapter(favAdapter);
 
+        // Load favorites milik user ini saja
         executor.execute(() -> {
-            List<FavoriteEntity> favs = mealDao.getAllFavorites();
+            List<FavoriteEntity> favs = mealDao.getAllFavorites(userId);
             mainHandler.post(() -> {
+                if (!isAdded()) return;
                 if (favs.isEmpty()) {
                     Toast.makeText(getContext(),
                             "No favorites yet. Add some first!",
@@ -161,11 +169,11 @@ public class PlannerFragment extends Fragment {
     private void showDeleteConfirmDialog(PlannerEntity planner, int position) {
         new android.app.AlertDialog.Builder(requireContext())
                 .setTitle("Remove Meal")
-                .setMessage("Remove " + planner.getMealName() + " from " +
-                        planner.getDayOfWeek() + "?")
+                .setMessage("Remove " + planner.getMealName() +
+                        " from " + planner.getDayOfWeek() + "?")
                 .setPositiveButton("Remove", (dialog, which) -> {
                     executor.execute(() -> {
-                        mealDao.deletePlannerByDay(planner.getDayOfWeek());
+                        mealDao.deletePlannerByDay(userId, planner.getDayOfWeek());
                         mainHandler.post(() -> plannerAdapter.clearItem(position));
                     });
                 })

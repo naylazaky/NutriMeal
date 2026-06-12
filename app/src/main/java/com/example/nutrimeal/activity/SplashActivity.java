@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
 import com.example.nutrimeal.R;
+import com.example.nutrimeal.utils.SessionManager;
 import com.example.nutrimeal.utils.ThemeUtils;
 
 public class SplashActivity extends AppCompatActivity {
@@ -22,9 +23,7 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Apply saved theme before setContentView
         ThemeUtils.applyTheme(this);
-
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_splash);
@@ -49,7 +48,17 @@ public class SplashActivity extends AppCompatActivity {
         animatorSet.start();
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
+            SessionManager sessionManager = new SessionManager(this);
+
+            Intent intent;
+            if (sessionManager.isLoggedIn()) {
+                // Sudah login — langsung ke Home
+                intent = new Intent(this, HomeActivity.class);
+            } else {
+                // Belum login — ke Login
+                intent = new Intent(this, LoginActivity.class);
+            }
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             finish();

@@ -21,6 +21,7 @@ import com.example.nutrimeal.R;
 import com.example.nutrimeal.adapter.NotesAdapter;
 import com.example.nutrimeal.database.MealDao;
 import com.example.nutrimeal.model.NoteEntity;
+import com.example.nutrimeal.utils.SessionManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,6 +36,8 @@ public class NotesFragment extends Fragment {
     private TextView tvEmpty;
     private NotesAdapter adapter;
     private MealDao mealDao;
+    private SessionManager sessionManager;
+    private int userId;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -52,6 +55,9 @@ public class NotesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mealDao = new MealDao(requireContext());
+        sessionManager = new SessionManager(requireContext());
+        userId = sessionManager.getUserId();
+
         rvNotes = view.findViewById(R.id.rv_notes);
         tvEmpty = view.findViewById(R.id.tv_empty);
 
@@ -70,7 +76,7 @@ public class NotesFragment extends Fragment {
 
     private void loadNotes() {
         executor.execute(() -> {
-            List<NoteEntity> notes = mealDao.getAllNotes();
+            List<NoteEntity> notes = mealDao.getAllNotes(userId);
             mainHandler.post(() -> {
                 if (isAdded()) {
                     adapter.submitList(notes);
@@ -90,7 +96,6 @@ public class NotesFragment extends Fragment {
         etNote.setText(note.getNoteText());
 
         final int[] selectedRating = {note.getStarRating()};
-
         refreshStars(layoutStars, selectedRating[0]);
 
         for (int i = 0; i < layoutStars.getChildCount(); i++) {
@@ -112,12 +117,13 @@ public class NotesFragment extends Fragment {
                         note.setDateModified(new SimpleDateFormat(
                                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                                 .format(new Date()));
-                        mealDao.insertOrUpdateNote(note);
+                        mealDao.insertOrUpdateNote(userId, note);
                         mainHandler.post(() -> {
                             loadNotes();
                             if (isAdded() && getContext() != null) {
                                 Toast.makeText(getContext(),
-                                        "Note updated", Toast.LENGTH_SHORT).show();
+                                        "Note updated",
+                                        Toast.LENGTH_SHORT).show();
                             }
                         });
                     });
@@ -131,7 +137,9 @@ public class NotesFragment extends Fragment {
             View child = layout.getChildAt(i);
             if (child instanceof ImageView) {
                 ((ImageView) child).setImageResource(
-                        i < rating ? R.drawable.ic_star_filled : R.drawable.ic_star_outline);
+                        i < rating ?
+                                R.drawable.ic_star_filled :
+                                R.drawable.ic_star_outline);
             }
         }
     }

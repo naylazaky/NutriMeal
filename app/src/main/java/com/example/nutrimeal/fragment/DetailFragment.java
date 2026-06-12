@@ -29,6 +29,7 @@ import com.example.nutrimeal.model.FavoriteEntity;
 import com.example.nutrimeal.model.MealDetail;
 import com.example.nutrimeal.model.MealDetailResponse;
 import com.example.nutrimeal.model.NoteEntity;
+import com.example.nutrimeal.utils.SessionManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
 
@@ -53,6 +54,8 @@ public class DetailFragment extends Fragment {
 
     private MealDetail currentMeal;
     private MealDao mealDao;
+    private SessionManager sessionManager;
+    private int userId;
     private boolean isFavorite = false;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -71,6 +74,9 @@ public class DetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mealDao = new MealDao(requireContext());
+        sessionManager = new SessionManager(requireContext());
+        userId = sessionManager.getUserId();
+
         bindViews(view);
 
         String mealId = getArguments() != null ? getArguments().getString("mealId") : "";
@@ -148,7 +154,7 @@ public class DetailFragment extends Fragment {
 
         // Check favorite status
         executor.execute(() -> {
-            isFavorite = mealDao.isFavorite(meal.getIdMeal());
+            isFavorite = mealDao.isFavorite(userId, meal.getIdMeal());
             mainHandler.post(() -> {
                 if (isAdded()) {
                     btnFavorite.setImageResource(isFavorite ?
@@ -164,7 +170,7 @@ public class DetailFragment extends Fragment {
 
     private void loadStarRating(String mealId) {
         executor.execute(() -> {
-            NoteEntity note = mealDao.getNoteByMealId(mealId);
+            NoteEntity note = mealDao.getNoteByMealId(userId, mealId);
             int rating = note != null ? note.getStarRating() : 0;
             mainHandler.post(() -> {
                 if (!isAdded()) return;
@@ -185,20 +191,17 @@ public class DetailFragment extends Fragment {
 
             final int starIndex = i;
             star.setOnClickListener(v -> {
-                // Langsung update tampilan bintang
                 renderStars(mealId, starIndex);
-
-                // Simpan ke database
                 executor.execute(() -> {
                     String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
                             Locale.getDefault()).format(new Date());
-                    NoteEntity existing = mealDao.getNoteByMealId(mealId);
+                    NoteEntity existing = mealDao.getNoteByMealId(userId, mealId);
                     NoteEntity note = new NoteEntity(
                             mealId,
                             existing != null ? existing.getNoteText() : "",
                             starIndex,
                             date);
-                    mealDao.insertOrUpdateNote(note);
+                    mealDao.insertOrUpdateNote(userId, note);
                     mainHandler.post(() -> {
                         if (isAdded() && getContext() != null) {
                             Toast.makeText(getContext(),
@@ -258,7 +261,7 @@ public class DetailFragment extends Fragment {
         btnFavorite.setOnClickListener(v -> {
             executor.execute(() -> {
                 if (isFavorite) {
-                    mealDao.deleteFavorite(meal.getIdMeal());
+                    mealDao.deleteFavorite(userId, meal.getIdMeal());
                     isFavorite = false;
                 } else {
                     String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
@@ -271,7 +274,7 @@ public class DetailFragment extends Fragment {
                             meal.getStrArea(),
                             meal.getStrInstructions(),
                             date);
-                    mealDao.insertFavorite(fav);
+                    mealDao.insertFavorite(userId, fav);
                     isFavorite = true;
                 }
                 mainHandler.post(() -> {
@@ -306,7 +309,7 @@ public class DetailFragment extends Fragment {
         editText.setPadding(pad, pad, pad, pad);
 
         executor.execute(() -> {
-            NoteEntity existing = mealDao.getNoteByMealId(mealId);
+            NoteEntity existing = mealDao.getNoteByMealId(userId, mealId);
             mainHandler.post(() -> {
                 if (existing != null) editText.setText(existing.getNoteText());
             });
@@ -318,7 +321,7 @@ public class DetailFragment extends Fragment {
                 .setPositiveButton(getString(R.string.save_note), (dialog, which) -> {
                     String noteText = editText.getText().toString().trim();
                     executor.execute(() -> {
-                        NoteEntity existing = mealDao.getNoteByMealId(mealId);
+                        NoteEntity existing = mealDao.getNoteByMealId(userId, mealId);
                         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
                                 Locale.getDefault()).format(new Date());
                         NoteEntity note = new NoteEntity(
@@ -326,7 +329,7 @@ public class DetailFragment extends Fragment {
                                 noteText,
                                 existing != null ? existing.getStarRating() : 0,
                                 date);
-                        mealDao.insertOrUpdateNote(note);
+                        mealDao.insertOrUpdateNote(userId, note);
                         mainHandler.post(() -> {
                             if (isAdded() && getContext() != null) {
                                 Toast.makeText(getContext(),
