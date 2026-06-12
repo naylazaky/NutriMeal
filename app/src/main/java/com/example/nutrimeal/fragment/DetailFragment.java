@@ -45,7 +45,7 @@ import retrofit2.Response;
 
 public class DetailFragment extends Fragment {
 
-    private ImageView ivHero, btnBack, btnFavorite, btnNote, btnShare;
+    private ImageView ivHero, btnBack, btnFavorite, btnNote;
     private TextView tvMealName, tvCategory, tvArea;
     private TabLayout tabLayout;
     private FrameLayout tabContent;
@@ -91,7 +91,6 @@ public class DetailFragment extends Fragment {
         btnBack = view.findViewById(R.id.btn_back);
         btnFavorite = view.findViewById(R.id.btn_favorite);
         btnNote = view.findViewById(R.id.btn_note);
-        btnShare = view.findViewById(R.id.btn_share);
         tvMealName = view.findViewById(R.id.tv_meal_name);
         tvCategory = view.findViewById(R.id.tv_category);
         tvArea = view.findViewById(R.id.tv_area);
@@ -140,7 +139,6 @@ public class DetailFragment extends Fragment {
                 .centerCrop()
                 .into(ivHero);
 
-        // YouTube button
         if (meal.getStrYoutube() != null && !meal.getStrYoutube().isEmpty()) {
             btnWatchTutorial.setVisibility(View.VISIBLE);
             btnWatchTutorial.setOnClickListener(v -> {
@@ -152,7 +150,6 @@ public class DetailFragment extends Fragment {
             btnWatchTutorial.setVisibility(View.GONE);
         }
 
-        // Check favorite status
         executor.execute(() -> {
             isFavorite = mealDao.isFavorite(userId, meal.getIdMeal());
             mainHandler.post(() -> {
@@ -289,17 +286,6 @@ public class DetailFragment extends Fragment {
         });
 
         btnNote.setOnClickListener(v -> showNoteDialog(meal.getIdMeal()));
-
-        btnShare.setOnClickListener(v -> {
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT, meal.getStrMeal());
-            shareIntent.putExtra(Intent.EXTRA_TEXT,
-                    "Check out this recipe: " + meal.getStrMeal() +
-                            "\n\n" + meal.getStrInstructions());
-            startActivity(Intent.createChooser(shareIntent,
-                    getString(R.string.share_recipe)));
-        });
     }
 
     private void showNoteDialog(String mealId) {
