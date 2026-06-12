@@ -35,7 +35,6 @@ public class MealDao {
         values.put(NutriMealDatabase.COL_DATE_ADDED, favorite.getDateAdded());
         db.insertWithOnConflict(NutriMealDatabase.TABLE_FAVORITES,
                 null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        db.close();
     }
 
     public void deleteFavorite(int userId, String mealId) {
@@ -44,7 +43,6 @@ public class MealDao {
                 NutriMealDatabase.COL_USER_ID + "=? AND " +
                         NutriMealDatabase.COL_MEAL_ID + "=?",
                 new String[]{String.valueOf(userId), mealId});
-        db.close();
     }
 
     public boolean isFavorite(int userId, String mealId) {
@@ -57,7 +55,6 @@ public class MealDao {
                 null, null, null);
         boolean exists = cursor.getCount() > 0;
         cursor.close();
-        db.close();
         return exists;
     }
 
@@ -87,7 +84,6 @@ public class MealDao {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        db.close();
         return list;
     }
 
@@ -98,14 +94,23 @@ public class MealDao {
         ContentValues values = new ContentValues();
         values.put(NutriMealDatabase.COL_USER_ID, userId);
         values.put(NutriMealDatabase.COL_MEAL_ID, note.getMealId());
+        values.put(NutriMealDatabase.COL_MEAL_NAME, note.getMealName());
         values.put(NutriMealDatabase.COL_NOTE_TEXT, note.getNoteText());
         values.put(NutriMealDatabase.COL_STAR_RATING, note.getStarRating());
         values.put(NutriMealDatabase.COL_DATE_MODIFIED, note.getDateModified());
         db.insertWithOnConflict(NutriMealDatabase.TABLE_NOTES,
                 null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        db.close();
     }
 
+    public void deleteNote(int userId, String mealId) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(NutriMealDatabase.TABLE_NOTES,
+                NutriMealDatabase.COL_USER_ID + "=? AND " +
+                        NutriMealDatabase.COL_MEAL_ID + "=?",
+                new String[]{String.valueOf(userId), mealId});
+    }
+
+    // ✅ Method yang hilang — dipakai di DetailFragment
     public NoteEntity getNoteByMealId(int userId, String mealId) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.query(NutriMealDatabase.TABLE_NOTES,
@@ -114,11 +119,11 @@ public class MealDao {
                         NutriMealDatabase.COL_MEAL_ID + "=?",
                 new String[]{String.valueOf(userId), mealId},
                 null, null, null);
-
         NoteEntity note = null;
         if (cursor.moveToFirst()) {
             note = new NoteEntity(
                     cursor.getString(cursor.getColumnIndexOrThrow(NutriMealDatabase.COL_MEAL_ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(NutriMealDatabase.COL_MEAL_NAME)),
                     cursor.getString(cursor.getColumnIndexOrThrow(NutriMealDatabase.COL_NOTE_TEXT)),
                     cursor.getInt(cursor.getColumnIndexOrThrow(NutriMealDatabase.COL_STAR_RATING)),
                     cursor.getString(cursor.getColumnIndexOrThrow(NutriMealDatabase.COL_DATE_MODIFIED))
@@ -126,7 +131,6 @@ public class MealDao {
             note.setId(cursor.getInt(cursor.getColumnIndexOrThrow(NutriMealDatabase.COL_ID)));
         }
         cursor.close();
-        db.close();
         return note;
     }
 
@@ -142,8 +146,10 @@ public class MealDao {
 
         if (cursor.moveToFirst()) {
             do {
+                // ✅ Fix — tambah mealName sebagai parameter ke-2
                 NoteEntity note = new NoteEntity(
                         cursor.getString(cursor.getColumnIndexOrThrow(NutriMealDatabase.COL_MEAL_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(NutriMealDatabase.COL_MEAL_NAME)),
                         cursor.getString(cursor.getColumnIndexOrThrow(NutriMealDatabase.COL_NOTE_TEXT)),
                         cursor.getInt(cursor.getColumnIndexOrThrow(NutriMealDatabase.COL_STAR_RATING)),
                         cursor.getString(cursor.getColumnIndexOrThrow(NutriMealDatabase.COL_DATE_MODIFIED))
@@ -153,7 +159,6 @@ public class MealDao {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        db.close();
         return list;
     }
 
@@ -169,7 +174,6 @@ public class MealDao {
         values.put(NutriMealDatabase.COL_MEAL_THUMB, planner.getMealThumb());
         db.insertWithOnConflict(NutriMealDatabase.TABLE_PLANNER,
                 null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        db.close();
     }
 
     public void deletePlannerByDay(int userId, String dayOfWeek) {
@@ -178,7 +182,6 @@ public class MealDao {
                 NutriMealDatabase.COL_USER_ID + "=? AND " +
                         NutriMealDatabase.COL_DAY_OF_WEEK + "=?",
                 new String[]{String.valueOf(userId), dayOfWeek});
-        db.close();
     }
 
     public List<PlannerEntity> getAllPlanner(int userId) {
@@ -203,7 +206,6 @@ public class MealDao {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        db.close();
         return list;
     }
 
@@ -217,7 +219,6 @@ public class MealDao {
         values.put(NutriMealDatabase.COL_DATE_ADDED, dateAdded);
         db.insertWithOnConflict(NutriMealDatabase.TABLE_FRIDGE,
                 null, values, SQLiteDatabase.CONFLICT_IGNORE);
-        db.close();
     }
 
     public void deleteFridgeIngredient(int userId, String ingredientName) {
@@ -226,7 +227,6 @@ public class MealDao {
                 NutriMealDatabase.COL_USER_ID + "=? AND " +
                         NutriMealDatabase.COL_INGREDIENT_NAME + "=?",
                 new String[]{String.valueOf(userId), ingredientName});
-        db.close();
     }
 
     public List<String> getAllFridgeIngredients(int userId) {
@@ -245,7 +245,6 @@ public class MealDao {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        db.close();
         return list;
     }
 }

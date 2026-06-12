@@ -33,7 +33,6 @@
             android:text="Tap a day to assign a meal"
             android:textColor="@color/text_secondary"
             android:textSize="13sp" />
-
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -47,5 +46,4 @@
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
 </LinearLayout>

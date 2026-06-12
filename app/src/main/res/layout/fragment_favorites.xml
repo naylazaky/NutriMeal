@@ -33,7 +33,6 @@
             android:text="@string/favorites"
             android:textColor="@color/text_primary_dark"
             android:textSize="20sp" />
-
     </LinearLayout>
 
     <TextView
@@ -58,5 +57,4 @@
         android:paddingEnd="16dp"
         android:paddingTop="12dp"
         android:paddingBottom="16dp" />
-
 </LinearLayout>

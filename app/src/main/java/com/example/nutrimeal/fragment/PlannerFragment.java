@@ -138,7 +138,6 @@ public class PlannerFragment extends Fragment {
 
         rvPicker.setAdapter(favAdapter);
 
-        // Load favorites milik user ini saja
         executor.execute(() -> {
             List<FavoriteEntity> favs = mealDao.getAllFavorites(userId);
             mainHandler.post(() -> {

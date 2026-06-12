@@ -63,15 +63,17 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         }
 
         void bind(NoteEntity note) {
-            tvMealId.setText("Meal ID: " + note.getMealId());
-            tvNoteText.setText(note.getNoteText());
+            String name = note.getMealName() != null && !note.getMealName().isEmpty()
+                    ? note.getMealName() : "Meal ID: " + note.getMealId();
+            tvMealId.setText(name);
+            tvNoteText.setText(note.getNoteText() != null && !note.getNoteText().isEmpty()
+                    ? note.getNoteText() : "No note written");
             tvDate.setText(note.getDateModified());
 
             layoutStars.removeAllViews();
             for (int i = 1; i <= 5; i++) {
                 ImageView star = new ImageView(itemView.getContext());
-                LinearLayout.LayoutParams params =
-                        new LinearLayout.LayoutParams(40, 40);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(40, 40);
                 params.setMarginEnd(4);
                 star.setLayoutParams(params);
                 star.setImageResource(i <= note.getStarRating() ?

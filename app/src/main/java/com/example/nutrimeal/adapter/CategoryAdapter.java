@@ -33,7 +33,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     }
 
     public void submitList(List<Category> newList) {
-        // Tambahkan "All" di posisi pertama
         List<Category> withAll = new ArrayList<>();
         withAll.add(new Category("0", "All", ""));
         withAll.addAll(newList);
@@ -85,7 +84,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         void bind(Category category, boolean isSelected) {
             tvCategoryName.setText(category.getStrCategory());
 
-            // Visual selected state
             if (isSelected) {
                 card.setCardBackgroundColor(
                         itemView.getContext().getColor(R.color.accent));
@@ -100,7 +98,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
                         itemView.getContext().getColor(R.color.text_primary_light));
             }
 
-            // Load image — "All" pakai icon default
             if (category.getStrCategoryThumb() != null
                     && !category.getStrCategoryThumb().isEmpty()) {
                 Glide.with(itemView.getContext())

@@ -6,7 +6,6 @@
     android:background="@color/surface_light"
     android:orientation="vertical">
 
-    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,7 +33,6 @@
             android:text="@string/my_notes"
             android:textColor="@color/text_primary_dark"
             android:textSize="20sp" />
-
     </LinearLayout>
 
     <TextView
@@ -59,5 +57,4 @@
         android:paddingEnd="16dp"
         android:paddingTop="12dp"
         android:paddingBottom="16dp" />
-
 </LinearLayout>

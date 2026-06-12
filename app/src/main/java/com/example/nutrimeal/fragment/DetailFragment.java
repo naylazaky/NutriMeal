@@ -195,6 +195,7 @@ public class DetailFragment extends Fragment {
                     NoteEntity existing = mealDao.getNoteByMealId(userId, mealId);
                     NoteEntity note = new NoteEntity(
                             mealId,
+                            currentMeal != null ? currentMeal.getStrMeal() : "",
                             existing != null ? existing.getNoteText() : "",
                             starIndex,
                             date);
@@ -302,7 +303,7 @@ public class DetailFragment extends Fragment {
         });
 
         new android.app.AlertDialog.Builder(requireContext())
-                .setTitle("My Note")
+                .setTitle("Note for " + (currentMeal != null ? currentMeal.getStrMeal() : ""))
                 .setView(editText)
                 .setPositiveButton(getString(R.string.save_note), (dialog, which) -> {
                     String noteText = editText.getText().toString().trim();
@@ -312,6 +313,7 @@ public class DetailFragment extends Fragment {
                                 Locale.getDefault()).format(new Date());
                         NoteEntity note = new NoteEntity(
                                 mealId,
+                                currentMeal != null ? currentMeal.getStrMeal() : "",
                                 noteText,
                                 existing != null ? existing.getStarRating() : 0,
                                 date);

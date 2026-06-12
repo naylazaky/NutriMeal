@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class NutriMealDatabase extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "nutrimeal.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     private static NutriMealDatabase instance;
 
@@ -37,7 +37,7 @@ public class NutriMealDatabase extends SQLiteOpenHelper {
     public static final String COL_CARBS = "carbs";
     public static final String COL_PROTEIN = "protein";
     public static final String COL_CACHED_AT = "cached_at";
-    public static final String COL_NAME = "name";
+    public static final String COL_NAME = "meal_name";
     public static final String COL_USERNAME = "username";
     public static final String COL_PASSWORD = "password";
     public static final String COL_PHOTO_PATH = "photo_path";
@@ -68,6 +68,7 @@ public class NutriMealDatabase extends SQLiteOpenHelper {
                     COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COL_USER_ID + " INTEGER, " +
                     COL_MEAL_ID + " TEXT, " +
+                    COL_MEAL_NAME + " TEXT, " +
                     COL_NOTE_TEXT + " TEXT, " +
                     COL_STAR_RATING + " INTEGER DEFAULT 0, " +
                     COL_DATE_MODIFIED + " TEXT, " +

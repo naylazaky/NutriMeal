@@ -107,7 +107,8 @@ public class NotesFragment extends Fragment {
         }
 
         new android.app.AlertDialog.Builder(requireContext())
-                .setTitle("Edit Note")
+                .setTitle("Note for " + (note.getMealName() != null
+                        ? note.getMealName() : note.getMealId()))
                 .setView(dialogView)
                 .setPositiveButton(getString(R.string.save_note), (dialog, which) -> {
                     String newText = etNote.getText().toString().trim();

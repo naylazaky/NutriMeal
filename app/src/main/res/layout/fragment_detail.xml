@@ -18,7 +18,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Hero Image -->
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="260dp">
@@ -43,10 +42,8 @@
                     android:background="@drawable/bg_circle_white"
                     android:padding="8dp"
                     android:src="@drawable/ic_arrow_back" />
-
             </FrameLayout>
 
-            <!-- Content -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,7 +58,6 @@
                     android:textColor="@color/text_primary_light"
                     android:textSize="22sp" />
 
-                <!-- Badges + stars -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -105,7 +101,6 @@
 
                 </LinearLayout>
 
-                <!-- Watch Tutorial button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_watch_tutorial"
                     android:layout_width="match_parent"
@@ -120,7 +115,6 @@
                     app:icon="@drawable/ic_youtube"
                     app:iconGravity="textStart" />
 
-                <!-- Tabs -->
                 <com.google.android.material.tabs.TabLayout
                     android:id="@+id/tab_layout"
                     android:layout_width="match_parent"
@@ -143,7 +137,6 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Bottom action bar -->
     <LinearLayout
         android:id="@+id/bottom_actions"
         android:layout_width="match_parent"
@@ -178,7 +171,6 @@
                 android:text="Favorite"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
-
         </LinearLayout>
 
         <View
@@ -207,9 +199,6 @@
                 android:text="Note"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
-
         </LinearLayout>
-
     </LinearLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

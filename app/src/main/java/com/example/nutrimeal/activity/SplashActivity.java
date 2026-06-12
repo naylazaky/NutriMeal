@@ -52,10 +52,8 @@ public class SplashActivity extends AppCompatActivity {
 
             Intent intent;
             if (sessionManager.isLoggedIn()) {
-                // Sudah login — langsung ke Home
                 intent = new Intent(this, HomeActivity.class);
             } else {
-                // Belum login — ke Login
                 intent = new Intent(this, LoginActivity.class);
             }
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

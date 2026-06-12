@@ -56,9 +56,7 @@
                 android:textSize="13sp"
                 app:strokeColor="@color/accent"
                 app:strokeWidth="1dp" />
-
         </com.google.android.material.button.MaterialButtonToggleGroup>
-
     </LinearLayout>
 
     <LinearLayout
@@ -97,9 +95,7 @@
                 android:textColor="@color/text_primary_light"
                 android:textColorHint="@color/text_secondary"
                 android:textSize="14sp" />
-
         </LinearLayout>
-
     </LinearLayout>
 
     <LinearLayout
@@ -139,7 +135,6 @@
                     android:textColor="@color/text_primary_light"
                     android:textColorHint="@color/text_secondary"
                     android:textSize="14sp" />
-
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
@@ -151,7 +146,6 @@
                 android:textSize="13sp"
                 app:backgroundTint="@color/accent"
                 app:cornerRadius="12dp" />
-
         </LinearLayout>
 
         <com.google.android.material.chip.ChipGroup
@@ -170,7 +164,6 @@
             android:textSize="14sp"
             app:backgroundTint="@color/accent"
             app:cornerRadius="12dp" />
-
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -184,5 +177,4 @@
         android:paddingTop="8dp"
         android:paddingBottom="16dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
 </LinearLayout>

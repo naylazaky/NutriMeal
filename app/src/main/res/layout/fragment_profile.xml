@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/surface_light">
@@ -10,7 +11,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,7 +20,6 @@
             android:paddingTop="60dp"
             android:paddingBottom="32dp">
 
-            <!-- Profile photo -->
             <ImageView
                 android:id="@+id/iv_profile_photo"
                 android:layout_width="88dp"
@@ -60,7 +59,6 @@
 
         </LinearLayout>
 
-        <!-- PREFERENCES section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -72,8 +70,7 @@
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 
-        <com.google.android.material.card.MaterialCardView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <com.google.android.material.card.MaterialCardView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -112,12 +109,9 @@
                     android:layout_height="wrap_content"
                     android:thumbTint="@color/accent"
                     android:trackTint="@color/text_secondary" />
-
             </LinearLayout>
-
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- MY COLLECTION section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -129,8 +123,7 @@
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 
-        <com.google.android.material.card.MaterialCardView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <com.google.android.material.card.MaterialCardView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -182,7 +175,6 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_chevron_right" />
-
                 </LinearLayout>
 
                 <View
@@ -228,14 +220,10 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_chevron_right" />
-
                 </LinearLayout>
-
             </LinearLayout>
-
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- ACCOUNT section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -247,8 +235,7 @@
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 
-        <com.google.android.material.card.MaterialCardView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <com.google.android.material.card.MaterialCardView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -264,7 +251,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- App version -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
@@ -295,7 +281,6 @@
                         android:text="@string/version_name"
                         android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
-
                 </LinearLayout>
 
                 <View
@@ -304,7 +289,6 @@
                     android:layout_marginStart="54dp"
                     android:background="@color/divider" />
 
-                <!-- Logout row -->
                 <LinearLayout
                     android:id="@+id/row_logout"
                     android:layout_width="match_parent"
@@ -318,7 +302,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_arrow_back"
-                        android:tint="@color/error" />
+                        app:tint="@color/error" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -329,13 +313,8 @@
                         android:text="Logout"
                         android:textColor="@color/error"
                         android:textSize="14sp" />
-
                 </LinearLayout>
-
             </LinearLayout>
-
         </com.google.android.material.card.MaterialCardView>
-
     </LinearLayout>
-
 </androidx.core.widget.NestedScrollView>

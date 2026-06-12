@@ -25,7 +25,6 @@ public class HomeActivity extends AppCompatActivity {
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_home);
 
-        // Apply system insets ke BottomNav supaya tidak ketutup gesture bar
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         ViewCompat.setOnApplyWindowInsetsListener(bottomNav, (v, insets) -> {
             int bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;

@@ -80,7 +80,6 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
         void bind(Meal meal) {
             tvName.setText(meal.getStrMeal());
 
-            // Tampilkan category badge hanya kalau ada
             if (meal.getStrCategory() != null && !meal.getStrCategory().isEmpty()) {
                 tvCategory.setVisibility(View.VISIBLE);
                 tvCategory.setText(meal.getStrCategory());
@@ -88,7 +87,6 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.ViewHolder> {
                 tvCategory.setVisibility(View.GONE);
             }
 
-            // Tampilkan area badge hanya kalau ada
             if (meal.getStrArea() != null && !meal.getStrArea().isEmpty()) {
                 tvArea.setVisibility(View.VISIBLE);
                 tvArea.setText(meal.getStrArea());

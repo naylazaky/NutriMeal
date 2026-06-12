@@ -35,7 +35,6 @@
                 android:background="@drawable/bg_circle_white"
                 android:padding="6dp"
                 android:src="@drawable/ic_heart_outline" />
-
         </FrameLayout>
 
         <LinearLayout
@@ -88,11 +87,7 @@
                     android:textColor="@color/text_secondary"
                     android:textSize="11sp"
                     android:visibility="gone" />
-
             </LinearLayout>
-
         </LinearLayout>
-
     </LinearLayout>
-
 </com.google.android.material.card.MaterialCardView>
