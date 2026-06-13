@@ -109,93 +109,52 @@ Nama database: `nutrimeal.db`
 
 ## Struktur Proyek
 
+```
 com.example.nutrimeal/
-
 ├── activity/
-
 │   ├── SplashActivity.java       # Layar pembuka dengan animasi
-
 │   ├── LoginActivity.java        # Halaman masuk
-
 │   ├── RegisterActivity.java     # Halaman daftar akun
-
 │   └── HomeActivity.java         # Aktivitas utama + BottomNav
-
 ├── fragment/
-
 │   ├── HomeFragment.java         # Beranda + kategori + daftar resep
-
 │   ├── SearchFragment.java       # Pencarian + mode kulkas
-
 │   ├── DetailFragment.java       # Detail resep + bahan + instruksi
-
 │   ├── PlannerFragment.java      # Perencana makan mingguan
-
 │   ├── ProfileFragment.java      # Profil + pengaturan
-
 │   ├── FavoritesFragment.java    # Daftar resep favorit
-
 │   └── NotesFragment.java        # Daftar catatan pribadi
-
 ├── adapter/
-
-│   ├── MealAdapter.java          # Adapter daftar resep
-
-│   ├── CategoryAdapter.java      # Adapter kategori horizontal
-
-│   ├── IngredientAdapter.java    # Adapter daftar bahan
-
-│   ├── PlannerAdapter.java       # Adapter perencana mingguan
-
-│   ├── FavoritesAdapter.java     # Adapter favorit + picker
-
-│   └── NotesAdapter.java         # Adapter catatan
-
+│   ├── MealAdapter.java
+│   ├── CategoryAdapter.java
+│   ├── IngredientAdapter.java
+│   ├── PlannerAdapter.java
+│   ├── FavoritesAdapter.java
+│   └── NotesAdapter.java
 ├── api/
-
-│   ├── ApiClient.java            # Konfigurasi Retrofit
-
-│   └── MealApiService.java       # Definisi endpoint API
-
+│   ├── ApiClient.java
+│   └── MealApiService.java
 ├── model/
-
-│   ├── Meal.java                 # Model resep ringkas
-
-│   ├── MealDetail.java           # Model detail resep + bahan
-
-│   ├── MealResponse.java         # Wrapper response API resep
-
-│   ├── MealDetailResponse.java   # Wrapper response detail
-
-│   ├── Category.java             # Model kategori
-
-│   ├── CategoryResponse.java     # Wrapper response kategori
-
-│   ├── Ingredient.java           # Model bahan masakan
-
-│   ├── FavoriteEntity.java       # Model data favorit (DB)
-
-│   ├── NoteEntity.java           # Model data catatan (DB)
-
-│   ├── PlannerEntity.java        # Model data planner (DB)
-
-│   └── User.java                 # Model data pengguna (DB)
-
+│   ├── Meal.java
+│   ├── MealDetail.java
+│   ├── MealResponse.java
+│   ├── MealDetailResponse.java
+│   ├── Category.java
+│   ├── CategoryResponse.java
+│   ├── Ingredient.java
+│   ├── FavoriteEntity.java
+│   ├── NoteEntity.java
+│   ├── PlannerEntity.java
+│   └── User.java
 ├── database/
-
-│   ├── NutriMealDatabase.java    # SQLiteOpenHelper + definisi tabel
-
-│   ├── MealDao.java              # Operasi DB resep, favorit, catatan
-
-│   └── UserDao.java              # Operasi DB pengguna
-
+│   ├── NutriMealDatabase.java
+│   ├── MealDao.java
+│   └── UserDao.java
 └── utils/
-
-├── NetworkUtils.java         # Cek ketersediaan internet
-
-├── ThemeUtils.java           # Manajemen tema gelap/terang
-
-└── SessionManager.java       # Manajemen sesi login pengguna
+    ├── NetworkUtils.java
+    ├── ThemeUtils.java
+    └── SessionManager.java
+```
 
 ---
 
