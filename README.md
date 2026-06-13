@@ -19,6 +19,21 @@ Aplikasi Android resep makanan modern yang dibangun dengan Java. Menggabungkan f
 
 ---
 
+## Cara Penggunaan
+
+1. **Daftar Akun** — Buka app, tap Register, isi nama lengkap, username, dan password
+2. **Login** — Masukkan username dan password yang sudah didaftarkan
+3. **Jelajah Resep** — Di halaman Home, scroll resep atau tap kategori untuk filter
+4. **Cari Resep** — Buka tab Search, ketik nama resep atau gunakan mode Fridge
+5. **Simpan Favorit** — Tap ikon hati di card resep atau di halaman detail
+6. **Beri Rating** — Buka detail resep, tap bintang untuk memberi rating
+7. **Tulis Catatan** — Di detail resep, tap ikon catatan dan tulis note
+8. **Rencanakan Menu** — Buka tab Planner, tap hari dan pilih dari favorit
+9. **Mode Gelap** — Buka Profile, toggle switch Dark Mode
+10. **Logout** — Buka Profile, tap Logout di bagian bawah
+    
+---
+
 ## Teknologi yang Digunakan
 
 | Lapisan | Teknologi |
